@@ -1,5 +1,10 @@
 /// <reference path="node_modules/vectorx/vector.ts" />
 /// <reference path="node_modules/utilsx/utils.ts" />
+/// <reference path="EventSystem.ts" />
+
+import { Box, EventSystem } from "./EventSystem"
+
+
 
 class Corporation{
     tags
@@ -77,6 +82,7 @@ class Tile{
     
 
 }
+enum Phases{turnorder,research,action,production}
 
 class Game{
     deck:Card[]
@@ -91,8 +97,35 @@ class Game{
     awards//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
     milestontes//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, moest metal/titanium
 
-    generation
-    turn
+    generation:Box<number> = new Box(0)
+    turn:Box<number> = new Box(0)
+    phase:Box<Phases> = new Box(Phases.turnorder)
+    onCardPlayed = new EventSystem<Card>()
+
+    start(){
+        this.phase.afterChange.listen((v) => {
+            if(v == Phases.turnorder){
+
+            }
+
+
+            if(v == Phases.turnorder){
+                
+            }
+
+            if(v == Phases.turnorder){
+                
+            }
+
+            if(v == Phases.turnorder){
+                
+            }
+        })
+
+
+        this.phase.set(Phases.turnorder)
+        
+    }
 }
 
 //phases

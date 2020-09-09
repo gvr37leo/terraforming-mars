@@ -85,9 +85,10 @@ class Tile{
 enum Phases{turnorder,research,action,production}
 
 class Game{
+    players:Player[]
     deck:Card[]
     discardpile:Card[]
-    tilegrid
+    tilegrid:TileSlot[][]
 
     temperature:number
     oxygen:number
@@ -95,7 +96,7 @@ class Game{
 
 
     awards//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
-    milestontes//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, moest metal/titanium
+    milestontes//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, most metal/titanium
 
     generation:Box<number> = new Box(0)
     turn:Box<number> = new Box(0)
@@ -128,6 +129,7 @@ class Game{
     }
 }
 
+var game = new Game()
 //phases
 //turn order -> first player marker moves
 

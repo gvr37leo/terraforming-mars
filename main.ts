@@ -19,6 +19,10 @@ class Resource{
     production
     instock
     moneyvalue
+
+    produce(){
+        this.instock += this.production
+    }
 }
 
 class Player{
@@ -37,6 +41,7 @@ class Player{
     heat:Resource
 
     terraformingpoints:number
+
 }
 
 var tags = ['science','microbe','animal','earth','jupiter','electricity','titanium','event','city','plant']
@@ -79,20 +84,50 @@ class Tile{
     sea
     city
     forest
-    
+}
+
+
+
+enum Phases{turnorder,research,action,production}
+enum EventTypes{pass,playcard,standardproject,actioncard,convertplants,convertheat,claimmilestone,fundaward,mulligan,gamestart,generationstart,turnstart}
+
+class GameEvent{
+    eventType:EventTypes
+    data:number[]
+    datajson:any
+}
+
+class PassEvent{
 
 }
-enum Phases{turnorder,research,action,production}
+
+class PlayCardEvent{
+    
+}
 
 class Game{
-    players:Player[]
-    deck:Card[]
-    discardpile:Card[]
-    tilegrid:TileSlot[][]
 
-    temperature:number
-    oxygen:number
-    oceansleft:number
+    eventQueue
+    //list of events to process
+    //pass
+    //play card
+    //standard project(inefficent buy)
+    //action card
+    //convert 8 plants
+    //convert 8 heat
+    //claim milestone 5vp
+    //fund award 5vp,2vp
+
+
+    players:Player[] = []
+    firsplayerMarker = 0
+    deck:Card[] = []
+    discardpile:Card[] = []
+    tilegrid:TileSlot[][] = []
+
+    temperature:number = -12
+    oxygen:number = 0
+    oceansleft:number = 6
 
 
     awards//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
@@ -106,20 +141,51 @@ class Game{
     start(){
         this.phase.afterChange.listen((v) => {
             if(v == Phases.turnorder){
-
+                this.firsplayerMarker = (this.firsplayerMarker + 1) % this.players.length
+                this.phase.set(Phases.research)
+                //turn order -> first player marker moves
             }
 
 
-            if(v == Phases.turnorder){
-                
+            if(v == Phases.research){
+                for(var player of this.players){
+                    this.pickCards([],0,3,player.id)
+                }
+                //listen for pickcards event (this doesnt have to be synchronous)
+
+                //buy cards,choose from 4 price 3
+                //show 4 cards to all people
+
+                //after everyone hase chosen and paid for their cards
+                this.phase.set(Phases.action)
             }
 
-            if(v == Phases.turnorder){
-                
+            if(v == Phases.action){
+
+                //pass
+                //play card
+                //standard project(inefficent buy)
+                //action card
+                //convert 8 plants
+                //convert 8 heat
+                //claim milestone 5vp
+                //fund award 5vp,2vp
+
+                //listen for these events at all times but only do something with them if in the right phase
             }
 
-            if(v == Phases.turnorder){
-                
+            if(v == Phases.production){
+                for(var player of this.players){
+                    player.metal.produce()
+                    player.money.produce()
+                    player.titanium.produce()
+                    player.forest.produce()
+                    player.electricity.produce()
+                    player.heat.produce()
+                }
+                //could do some animations but for now just go to next phase immediatly
+                this.phase.set(Phases.turnorder)
+                //production
             }
         })
 
@@ -127,30 +193,14 @@ class Game{
         this.phase.set(Phases.turnorder)
         
     }
+
+    pickCards(options:number[],min:number,max:number,playerid:number){
+        //trigger some sort of event for player to listen too
+        //trigger another event when player is done picking for game to listen too
+        return []
+    }
 }
 
 var game = new Game()
-//phases
-//turn order -> first player marker moves
 
-//buy cards,choose from 4 price 3
-
-//actions
-//play card
-//standard project(inefficent buy)
-//action card
-//convert 8 plants
-//convert 8 heat
-//claim milestone 5vp
-//fund award 5vp,2vp
-
-//production
-
-
-//event based
-//events list
-//generation start
-//generation end
-
-//turn start
-//end
+game.players.push(new Player())

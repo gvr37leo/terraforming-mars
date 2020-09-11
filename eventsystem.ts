@@ -1,4 +1,4 @@
-export class Box<T>{
+class Box<T>{
     beforeChange:EventSystem<T> = new EventSystem()
     afterChange:EventSystem<T> = new EventSystem()
 
@@ -19,8 +19,8 @@ export class Box<T>{
     }
 }
 
-export class PEvent<T>{
-    cbset:Set<EventListener<T>> = new Set()
+class PEvent<T>{
+    cbset:Set<EventListeneras<T>> = new Set()
     handled:boolean = false
 
     constructor(public value:T){
@@ -29,16 +29,16 @@ export class PEvent<T>{
     
 }
 
-export type EventListener<T> = (val:T,e:PEvent<T>) => void
+type EventListeneras<T> = (val:T,e:PEvent<T>) => void
 
-export class EventSystem<T>{
-    listeners:EventListener<T>[] = []
+class EventSystem<T>{
+    listeners:EventListeneras<T>[] = []
 
     constructor(){
 
     }
 
-    listen(cb:EventListener<T>){
+    listen(cb:EventListeneras<T>){
         this.listeners.push(cb)
     }
 

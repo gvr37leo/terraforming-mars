@@ -18,14 +18,19 @@ class Resource{
     }
 }
 
+enum PlayerStates{mulliganning,selectingtile,normal}
 
 class Player{
     id
     hand:Card[]
     board:Card[]
 
+    passed:boolean
     actions:number
     maxactions:number
+    terraformingpoints:number
+
+    playerState:PlayerStates
 
     money:Resource
     metal:Resource
@@ -34,6 +39,5 @@ class Player{
     electricity:Resource
     heat:Resource
 
-    terraformingpoints:number
 
 }

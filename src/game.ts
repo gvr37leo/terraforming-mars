@@ -102,7 +102,7 @@ class Game{
 
     standardProjects:StandardProject[] = []
 
-    milestontes//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
+    milestones//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
     awards//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, most metal/titanium
 
     generation:Box<number> = new Box(0)
@@ -110,6 +110,9 @@ class Game{
     phase:Box<Phases> = new Box(Phases.turnorder)
     onCardPlayed = new EventSystem<Card>()
 
+    constructor(public element:HTMLElement){
+
+    }
 
     processQueue(){
         var event = this.eventQueue.shift()
@@ -122,6 +125,14 @@ class Game{
 
     listen(event:EventTypes,cb:(e:GameEvent) => void){
         this.listeners.push(new Listener(event,cb))
+    }
+
+    listenOnce(event:EventTypes,cb:(e:GameEvent) => void){
+        var listener = new Listener(event,(e) => {
+            remove(this.listeners,listener)
+            cb(e)
+        })
+        this.listeners.push(listener)
     }
 
     queueEvent(event:GameEvent){
@@ -203,7 +214,7 @@ class Game{
             //remove card from hand
             var event = e.data as PlayCardEvent
             var player = findbyid(this.players,event.playerid)
-            var card = remove(player.hand,event.cardid)
+            var card = removebyid(player.hand,event.cardid)
             player.board.push(card)
 
         })
@@ -259,4 +270,76 @@ class Game{
     getActivePlayer(){
         return this.players[this.playerturnMarker]
     }
+
+    render(){
+
+        
+        var companytemplate = document.querySelector('#companytemplate')
+        
+        
+        var gameboardelement = this.getgameboardrefs()
+        this.element.appendChild(gameboardelement.root)
+        //render board
+
+        for(var player of this.players){
+
+            var playerelement = this.getplayerrefs()
+
+            for(var card of player.hand){
+                var cardelement = this.getcardrefs()
+            }
+
+            for(var card of player.board){
+                var cardelement = this.getcardrefs()
+            }
+        }
+        //render player
+        //render cards
+    }
+
+    getgameboardrefs(){
+        var gameboardtemplate = document.querySelector('#gameboardtemplate')
+        var html = string2html(gameboardtemplate.innerHTML)
+
+        return {
+            root:html,
+            oxygenmeter:html.querySelector('#oxygenmeter'),
+            standardprojects:html.querySelector('#standardprojects'),
+            tileboard:html.querySelector('#tileboard'),
+            temperaturemeter:html.querySelector('#temperaturemeter'),
+            milestones:html.querySelector('#milestones'),
+            awards:html.querySelector('#awards'),
+            players:html.querySelector('#players'),
+        }
+    }
+
+    getplayerrefs(){
+        var playertemplate = document.querySelector('#playertemplate')
+        var html = string2html(playertemplate.innerHTML)
+
+        return{
+            root:html,
+            resources:html.querySelector('#resources'),
+            cards:html.querySelector('#cards'),
+            board:html.querySelector('#board'),
+            playerturntoken:html.querySelector('#playerturntoken'),
+            playerstarttoken:html.querySelector('#playerstarttoken'),
+        }
+    }
+
+    getcardrefs(){
+        var cardtemplate = document.querySelector('#cardtemplate')
+        var html = string2html(cardtemplate.innerHTML)
+
+        return{
+            root:html,
+            title:html.querySelector('#title'),
+            image:html.querySelector('#image'),
+            cardid:html.querySelector('#cardid'),
+            effect:html.querySelector('#effect'),
+            flavortext:html.querySelector('#flavortext'),
+        }
+    }
 }
+
+

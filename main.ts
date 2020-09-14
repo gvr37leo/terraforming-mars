@@ -10,9 +10,14 @@
 /// <reference path="src/utils.ts" />
 
 
+var game:Game
 
-
-
-var game = new Game()
-
-game.players.push(new Player())
+includeHTML().then(() => {
+    game = new Game(document.querySelector('#gamecontainer'))
+    game.players.push(new Player())
+    game.players.push(new Player())
+    game.players.push(new Player())
+    game.players.push(new Player())
+    
+    game.render()
+})

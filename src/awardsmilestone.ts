@@ -48,18 +48,24 @@ var standardprojects = [
     new StandardProject('aquifer',18,() => {
         var player = game.getActivePlayer()
         game.pickTile(game.getEligibleWaterTiles(),player.id)
-        //select water tile
+        game.listenOnce(EventTypes.tileClick,(e) => {
+            //select water tile
+            
+        })
     }),
     new StandardProject('greenery',23,() => {
         var player = game.getActivePlayer()
         game.pickTile(game.getEligibleLandTiles(),player.id)
-        
-        //select greenery tile
+        game.listenOnce(EventTypes.tileClick,(e) => {
+            //select greenery tile
+        })
     }),
     new StandardProject('city',25,() => {
         var player = game.getActivePlayer()
         game.pickTile(game.getEligibleLandTiles(),player.id)
-        //select city tile
+        game.listenOnce(EventTypes.tileClick,(e) => {
+            //select city tile
+        })
     }),
 ]
 

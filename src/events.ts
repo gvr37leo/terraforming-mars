@@ -1,6 +1,6 @@
 enum EventTypes{
     pass,playcard,standardproject,actioncard,convertplants,convertheat,claimmilestone,fundaward,
-    mulligan,
+    mulligan,mulliganFinished,
     gamestart,generationstart,turnstart
     ,phasechange
     ,tileClick}
@@ -96,6 +96,16 @@ class MulliganEvent{
         public min:number,
         public max:number,
         public playerid:number,
+    ){
+
+    }
+}
+
+class MulliganFinishedEvent{
+
+    constructor(
+        public playerid:number,
+        public chosencards:number[],
     ){
 
     }

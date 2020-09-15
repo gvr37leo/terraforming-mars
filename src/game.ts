@@ -109,17 +109,20 @@ class Game{
     turn:Box<number> = new Box(0)
     phase:Box<Phases> = new Box(Phases.turnorder)
     onCardPlayed = new EventSystem<Card>()
+    gameboardElement: GameBoardElement
 
-    constructor(public element:HTMLElement){
-
+    constructor(public containerelement:HTMLElement){
+        this.deck = generateRandomCards(50)
     }
 
     processQueue(){
-        var event = this.eventQueue.shift()
-
-        var listeners = this.listeners.filter(listener => listener.eventype == event.eventType)
-        for(var listener of listeners){
-            listener.cb(event)
+        while(this.eventQueue.length > 0){
+            var event = this.eventQueue.shift()
+    
+            var listeners = this.listeners.filter(listener => listener.eventype == event.eventType)
+            for(var listener of listeners){
+                listener.cb(event)
+            }
         }
     }
 
@@ -156,13 +159,15 @@ class Game{
 
                 
                 for(var player of this.players){
-                    this.pickCards([0,1,2,3],0,3,player.id)
+                    this.pickCards([],0,3,player.id)
+                    //here
                 }
 
                 //set some sort of mulliganning state on the player
-                //listen for mulligan events
-                //continue when everyone has mulliganned
-                this.phase.set(Phases.action)
+                //listen for mulliganfinished events in other listener
+                //in that listener check when every player has finished mulliganning and then set action phase
+                
+                
             }
 
             if(v == Phases.action){
@@ -187,6 +192,18 @@ class Game{
 
         this.listen(EventTypes.mulligan,(e) => {
 
+        })
+
+        this.listen(EventTypes.mulliganFinished,(e) => {
+            var event = e.data as MulliganFinishedEvent
+            if(this.phase.get() == Phases.research){
+                var player = findbyid(this.players,event.playerid)
+                player.isMulliganning = false
+
+                if(this.players.every(p => p.isMulliganning == false)){
+                    this.phase.set(Phases.action)
+                }
+            }
         })
 
         //action events
@@ -250,8 +267,19 @@ class Game{
     }
 
     pickCards(options:number[],min:number,max:number,playerid:number){
-        //trigger some sort of event for player to listen too
-        //trigger another event when player is done picking for game to listen too
+        var player = findbyid(this.players,playerid)
+        player.isMulliganning = true
+        player.mulliganHand = []
+        for(var option of options){
+            player.mulliganHand.push({
+                selected:false,
+                card:removebyid(game.deck,option),
+            })
+        }
+
+        //setup player mulliganstate
+
+        
         return []
     }
 
@@ -277,27 +305,29 @@ class Game{
         var companytemplate = document.querySelector('#companytemplate')
         
         
-        var gameboardelement = this.getgameboardrefs()
-        this.element.appendChild(gameboardelement.root)
+        this.gameboardElement = this.getgameboardrefs() 
+        this.containerelement.appendChild(this.gameboardElement.root)
         //render board
 
         for(var player of this.players){
-
-            var playerelement = this.getplayerrefs()
+            player.playerElement = this.getplayerrefs()
+            this.gameboardElement.players.appendChild(player.playerElement.root)
 
             for(var card of player.hand){
-                var cardelement = this.getcardrefs()
+                card.cardElement = this.getcardrefs()
+                player.playerElement.board.appendChild(card.cardElement.root)
             }
 
             for(var card of player.board){
-                var cardelement = this.getcardrefs()
+                card.cardElement = this.getcardrefs()
+                player.playerElement.board.appendChild(card.cardElement.root)
             }
         }
         //render player
         //render cards
     }
 
-    getgameboardrefs(){
+    getgameboardrefs():GameBoardElement{
         var gameboardtemplate = document.querySelector('#gameboardtemplate')
         var html = string2html(gameboardtemplate.innerHTML)
 
@@ -313,7 +343,7 @@ class Game{
         }
     }
 
-    getplayerrefs(){
+    getplayerrefs():PlayerElement{
         var playertemplate = document.querySelector('#playertemplate')
         var html = string2html(playertemplate.innerHTML)
 
@@ -327,7 +357,7 @@ class Game{
         }
     }
 
-    getcardrefs(){
+    getcardrefs():CardElement{
         var cardtemplate = document.querySelector('#cardtemplate')
         var html = string2html(cardtemplate.innerHTML)
 
@@ -342,4 +372,31 @@ class Game{
     }
 }
 
+class GameBoardElement{
+    root: HTMLElement;
+    oxygenmeter: Element;
+    standardprojects: Element;
+    tileboard: Element;
+    temperaturemeter: Element;
+    milestones: Element;
+    awards: Element;
+    players: Element;
+}
 
+class PlayerElement{
+    root: HTMLElement;
+    resources: Element;
+    cards: Element;
+    board: Element;
+    playerturntoken: Element;
+    playerstarttoken: Element;
+}
+
+class CardElement{
+    root: HTMLElement;
+    title: Element;
+    image: Element;
+    cardid: Element;
+    effect: Element;
+    flavortext: Element;
+}

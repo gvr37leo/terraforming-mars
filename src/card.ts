@@ -1,15 +1,14 @@
-var tags = ['science','microbe','animal','earth','jupiter','electricity','titanium','event','city','plant']
-
-
+enum Tags {'science','microbe','animal','earth','jupiter','electricity','metal','titanium','event','city','plant'}
 
 class Card{
+    cardElement: CardElement
 
     constructor(
         public title:string,
         public rules:Rule[],//oxygen/heat/water min/max restriction (maybe make table for rules with id's and description to make rendering easier)
         public cost:number,
         public victorypoints:number,
-        public tags:string[],
+        public tags:Tags[],
         public immediateEffect:() => void,
         public render:() => HTMLElement,
     ){

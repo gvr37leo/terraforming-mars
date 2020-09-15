@@ -131,3 +131,24 @@ var carddatabase:Card[] = [
     ),
 ]
 
+function generateRandomCards(n:number){
+    var result = []
+    for(var i = 0; i < n;i++){
+        result.push(new Card(
+            `this is card ${i}`,
+            [new Rule('hey',() => true)],
+            10,
+            1,
+            [Tags.science,Tags.titanium,Tags.metal,Tags.microbe,Tags.animal],
+            () => {
+                var player = game.getActivePlayer()
+                player.metal.production += 2
+            },
+            () => {
+                return string2html('<p>description</p>')
+            },
+        ))
+    }
+    return result
+}
+

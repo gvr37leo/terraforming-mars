@@ -22,8 +22,9 @@ enum PlayerStates{mulliganning,selectingtile,normal}
 
 class Player{
     id
-    hand:Card[]
-    board:Card[]
+    name:string
+    hand:Card[] = []
+    board:Card[] = []
 
     passed:boolean
     actions:number
@@ -38,6 +39,14 @@ class Player{
     forest:Resource
     electricity:Resource
     heat:Resource
+    playerElement: PlayerElement
+
+    isMulliganning: boolean
+    mulliganHand:{selected:boolean,card:Card}[] = []
 
 
+    constructor(){
+        this.hand.push(new Card('',[],1,1,[],() => {},() => null))
+        this.board.push(new Card('',[],1,1,[],() => {},() => null))
+    }
 }

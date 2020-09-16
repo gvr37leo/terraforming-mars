@@ -30,6 +30,9 @@ class ResourceElement{
 
 class CardElement{
     root: HTMLElement;
+    cost:HTMLElement;
+    rules:HTMLElement;
+    tags:HTMLElement;
     title: HTMLElement;
     image: HTMLImageElement;
     cardid: HTMLElement;

@@ -22,7 +22,7 @@ function updateGameBoardData(gameboard:Game){
     html.oxygenmeter.innerText = gameboard.oxygen.current.toString()
     html.temperaturemeter.innerText = gameboard.temperature.current.toString()
     html.standardprojects
-    for(var player of this.players){
+    for(var player of gameboard.players){
         this.updatePlayerData(player)
     }
     html.tileboard
@@ -90,6 +90,9 @@ function getcardrefs():CardElement{
 
     return{
         root:html,
+        cost:html.querySelector('#cost'),
+        rules:html.querySelector('#rules'),
+        tags:html.querySelector('#tags'),
         title:html.querySelector('#title'),
         image:html.querySelector('#image'),
         cardid:html.querySelector('#cardid'),
@@ -106,4 +109,8 @@ function updateCardData(card:Card){
     html.flavortext.innerText = card.flavortext
     html.image.src = card.imageurl
     html.title.innerText = card.title
+    html.cost.innerText = card.cost.toString()
+    html.rules.innerText = card.rules.length.toString()
+    html.tags.innerText = card.tags.join(',')
+
 }

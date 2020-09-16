@@ -2,6 +2,12 @@ enum Tags {'science','microbe','animal','earth','jupiter','electricity','metal',
 
 class Card{
     cardElement: CardElement
+    id = 0
+    microbes = 0
+    animals = 0
+    imageurl = ''
+    isTapped = false
+    flavortext = ''
 
     constructor(
         public title:string,
@@ -10,17 +16,12 @@ class Card{
         public victorypoints:number,
         public tags:Tags[],
         public immediateEffect:() => void,
-        public render:() => HTMLElement,
+        public render:(self:Card) => HTMLElement,
     ){
 
 
     }
 
-    id
-    microbes = 0
-    animals = 0
-    image = ''
-    isTapped = false
 
     //onplay add onplay to eventqueue
     

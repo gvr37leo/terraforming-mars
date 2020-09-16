@@ -34,7 +34,7 @@ class Milestone{
     }
 }
 
-var standardprojects = [
+var globalstandardprojects = [
     new StandardProject('power plant',11,() => {
         var player = game.getActivePlayer()
         player.electricity.production++
@@ -68,6 +68,8 @@ var standardprojects = [
         })
     }),
 ]
+
+
 
 var milestones:Milestone[] = [
     new Milestone('terraformer', (p) => {

@@ -134,7 +134,7 @@ var carddatabase:Card[] = [
 function generateRandomCards(n:number){
     var result = []
     for(var i = 0; i < n;i++){
-        result.push(new Card(
+        var card = new Card(
             `this is card ${i}`,
             [new Rule('hey',() => true)],
             10,
@@ -144,10 +144,13 @@ function generateRandomCards(n:number){
                 var player = game.getActivePlayer()
                 player.metal.production += 2
             },
-            () => {
-                return string2html('<p>description</p>')
+            function(self){
+                return string2html(`<div>description ${self.id}</div>`)
             },
-        ))
+        )
+        card.id = i
+        card.imageurl = 'https://cdn.shopify.com/s/files/1/0220/1594/products/pic3615573_md_600x600.png?v=1506572675'
+        result.push(card)
     }
     return result
 }

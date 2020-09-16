@@ -1,38 +1,3 @@
-class TileSlot{
-    tile:Tile
-    type = ['ocean','ground']
-    // resources
-    cards
-    metal
-    plants
-    titanium
-
-    // reserved
-    phobos
-    noctis
-    ganymede
-    
-}
-
-class Tile{
-    owner
-    sea
-    city
-    forest
-}
-
-class Meter{
-    current = 0
-
-    constructor(
-        public min:number,
-        public max:number,
-        public stepsize:number,
-    ){
-        this.current = min
-    }
-}
-
 
 enum Phases{turnorder,research,action,production}
 
@@ -87,8 +52,8 @@ class Game{
     //claim milestone 5vp
     //fund award 5vp,2vp
 
-    eventQueue:GameEvent[]
-    listeners:Listener[]
+    eventQueue:GameEvent[] = []
+    listeners:Listener[] = []
     players:Player[] = []
     firsplayerMarker = 0
     playerturnMarker = 0
@@ -100,9 +65,10 @@ class Game{
     oxygen = new Meter(0,14,1)
     oceansleft:number = 6
 
-    standardProjects:StandardProject[] = []
+    standardProjects:StandardProject[] = globalstandardprojects
 
-    milestones//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
+    
+    milestones = milestones//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
     awards//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, most metal/titanium
 
     generation:Box<number> = new Box(0)
@@ -112,7 +78,7 @@ class Game{
     gameboardElement: GameBoardElement
 
     constructor(public containerelement:HTMLElement){
-        this.deck = generateRandomCards(50)
+        
     }
 
     processQueue(){
@@ -142,11 +108,16 @@ class Game{
         this.eventQueue.push(event)
     }
 
-    start(){
+    init(){
         //update event to add to event queue
         //mulligan
         //actions
-
+        this.listen(EventTypes.gamestart, e => {
+            this.deck = generateRandomCards(50)
+            for(var player of this.players){
+                player.hand = player.hand.concat(this.deck.splice(0,2)) 
+            }
+        })
         this.listen(EventTypes.phasechange, e => {
             var v:Phases = e.data as any
             if(v == Phases.turnorder){
@@ -198,9 +169,9 @@ class Game{
             var event = e.data as MulliganFinishedEvent
             if(this.phase.get() == Phases.research){
                 var player = findbyid(this.players,event.playerid)
-                player.isMulliganning = false
+                player.playerState = PlayerStates.mulliganning
 
-                if(this.players.every(p => p.isMulliganning == false)){
+                if(this.players.every(p => p.playerState != PlayerStates.mulliganning)){
                     this.phase.set(Phases.action)
                 }
             }
@@ -268,7 +239,7 @@ class Game{
 
     pickCards(options:number[],min:number,max:number,playerid:number){
         var player = findbyid(this.players,playerid)
-        player.isMulliganning = true
+        player.playerState = PlayerStates.mulliganning
         player.mulliganHand = []
         for(var option of options){
             player.mulliganHand.push({
@@ -305,98 +276,42 @@ class Game{
         var companytemplate = document.querySelector('#companytemplate')
         
         
-        this.gameboardElement = this.getgameboardrefs() 
+        this.gameboardElement = getgameboardrefs() 
         this.containerelement.appendChild(this.gameboardElement.root)
         //render board
 
         for(var player of this.players){
-            player.playerElement = this.getplayerrefs()
+            player.playerElement = getplayerrefs()
             this.gameboardElement.players.appendChild(player.playerElement.root)
 
+            
+            player.money.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.money.element.root)
+            player.metal.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.metal.element.root)
+            player.titanium.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.titanium.element.root)
+            player.forest.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.forest.element.root)
+            player.electricity.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.electricity.element.root)
+            player.heat.element = getResourceRefs()
+            player.playerElement.resources.appendChild(player.heat.element.root)
+            
+
             for(var card of player.hand){
-                card.cardElement = this.getcardrefs()
+                card.cardElement = getcardrefs()
                 player.playerElement.board.appendChild(card.cardElement.root)
             }
 
             for(var card of player.board){
-                card.cardElement = this.getcardrefs()
+                card.cardElement = getcardrefs()
                 player.playerElement.board.appendChild(card.cardElement.root)
             }
         }
-        //render player
-        //render cards
+
+        updateGameBoardData(this)
     }
 
-    getgameboardrefs():GameBoardElement{
-        var gameboardtemplate = document.querySelector('#gameboardtemplate')
-        var html = string2html(gameboardtemplate.innerHTML)
-
-        return {
-            root:html,
-            oxygenmeter:html.querySelector('#oxygenmeter'),
-            standardprojects:html.querySelector('#standardprojects'),
-            tileboard:html.querySelector('#tileboard'),
-            temperaturemeter:html.querySelector('#temperaturemeter'),
-            milestones:html.querySelector('#milestones'),
-            awards:html.querySelector('#awards'),
-            players:html.querySelector('#players'),
-        }
-    }
-
-    getplayerrefs():PlayerElement{
-        var playertemplate = document.querySelector('#playertemplate')
-        var html = string2html(playertemplate.innerHTML)
-
-        return{
-            root:html,
-            resources:html.querySelector('#resources'),
-            cards:html.querySelector('#cards'),
-            board:html.querySelector('#board'),
-            playerturntoken:html.querySelector('#playerturntoken'),
-            playerstarttoken:html.querySelector('#playerstarttoken'),
-        }
-    }
-
-    getcardrefs():CardElement{
-        var cardtemplate = document.querySelector('#cardtemplate')
-        var html = string2html(cardtemplate.innerHTML)
-
-        return{
-            root:html,
-            title:html.querySelector('#title'),
-            image:html.querySelector('#image'),
-            cardid:html.querySelector('#cardid'),
-            effect:html.querySelector('#effect'),
-            flavortext:html.querySelector('#flavortext'),
-        }
-    }
-}
-
-class GameBoardElement{
-    root: HTMLElement;
-    oxygenmeter: Element;
-    standardprojects: Element;
-    tileboard: Element;
-    temperaturemeter: Element;
-    milestones: Element;
-    awards: Element;
-    players: Element;
-}
-
-class PlayerElement{
-    root: HTMLElement;
-    resources: Element;
-    cards: Element;
-    board: Element;
-    playerturntoken: Element;
-    playerstarttoken: Element;
-}
-
-class CardElement{
-    root: HTMLElement;
-    title: Element;
-    image: Element;
-    cardid: Element;
-    effect: Element;
-    flavortext: Element;
+    
 }

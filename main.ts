@@ -16,14 +16,12 @@
 /// <reference path="src/meter.ts" />
 
 var game:Game
-
 includeHTML().then(() => {
     game = new Game(document.querySelector('#gamecontainer'))
     game.init()
     game.players.push(new Player(0,'player 1'))
     game.players.push(new Player(1,'player 2'))
     game.players.push(new Player(2,'player 3'))
-    game.players.push(new Player(3,'player 4'))
 
     game.queueEvent(new GameEvent(EventTypes.gamestart,{}))
     game.processQueue()

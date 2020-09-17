@@ -16,6 +16,7 @@ class PlayerElement{
     resources: HTMLElement;
     cards: HTMLElement;
     board: HTMLElement;
+    mulligan: HTMLElement;
     playerturntoken: HTMLElement;
     playerstarttoken: HTMLElement;
 }

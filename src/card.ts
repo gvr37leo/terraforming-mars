@@ -16,7 +16,7 @@ class Card{
         public victorypoints:number,
         public tags:Tags[],
         public immediateEffect:() => void,
-        public render:(self:Card) => HTMLElement,
+        public renderDescription:(self:Card) => HTMLElement,
     ){
 
 

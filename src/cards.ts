@@ -131,8 +131,8 @@ var carddatabase:Card[] = [
     ),
 ]
 
-function generateRandomCards(n:number){
-    var result = []
+function generateRandomCards(n:number):Card[]{
+    var result:Card[] = []
     for(var i = 0; i < n;i++){
         var card = new Card(
             `this is card ${i}`,

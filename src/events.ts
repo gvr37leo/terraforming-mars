@@ -1,9 +1,13 @@
 enum EventTypes{
-    pass,playcard,standardproject,actioncard,convertplants,convertheat,claimmilestone,fundaward,
-    mulligan,mulliganFinished,
-    gamestart,generationstart,turnstart
+    pass,playcard,standardproject,actioncard,convertplants,convertheat,claimmilestone,fundaward
+    ,mulligan,mulliganConfirmed
+    ,gamestart,generationstart,turnstart
     ,phasechange
-    ,tileClick}
+    ,tileClick
+    ,tileplaced,heatincrease,oxygenincrease
+    ,gamefinished
+
+}
 
 class GameEvent{
     
@@ -15,107 +19,74 @@ class GameEvent{
     }
 }
 
-class PhaseChange{
+type GameStartEvent = {
+
+}
+
+type GenerationStartEvent = {
+
+}
+
+type TurnStartEvent = {
+
+}
+
+type PhaseChangeEvent = {
     phase:Phases
 }
 
-class PassEvent{
-    
-    constructor(
-        public playerid,
-    ){
-
-    }
+type PassEvent = {
+    playerid
 }
 
-class PlayCardEvent{
-    constructor(
-        public playerid,
-        public cardid,
-    ){
-
-    }
+type PlayCardEvent = {
+    playerid,
+    cardid,
 }
 
-class StandardProjectEvent{
-    constructor(
-        public playerid,
-        public projectid:number,
-    ){
-
-    }
+type StandardProjectEvent = {
+    playerid,
+    projectid:number,
 }
 
-class ActionCardEvent{
-    constructor(
-        public playerid,
-        public cardid,
-    ){
-
-    }
+type ActionCardEvent = {
+    playerid,
+    cardid,
 }
 
-class ConvertPlantsEvent{
-    constructor(
-        public playerid,
-    ){
-
-    }
+type ConvertPlantsEvent = {
+    playerid,
 }
 
-class ConvertHeatEvent{
-    constructor(
-        public playerid,
-    ){
-
-    }
+type ConvertHeatEvent = {
+    playerid,
 }
 
-class ClaimMilestoneEvent{
-    constructor(
-        public playerid,
-        public milestoneid:number
-    ){
-
-    }
+type ClaimMilestoneEvent = {
+    playerid,
+    milestoneid:number
 }
 
-class FundAwardEvent{
-    constructor(
-        public playerid,
-        public awardid:number
-    ){
-
-    }
+type FundAwardEvent = {
+    playerid,
+    awardid:number
 }
 
-class MulliganEvent{
+type MulliganEvent = {
 
-    constructor(
-        public cardoptions:number[],
-        public min:number,
-        public max:number,
-        public playerid:number,
-    ){
-
-    }
+    cardoptions:number[],
+    min:number,
+    max:number,
+    playerid:number,
 }
 
-class MulliganFinishedEvent{
+type MulliganConfirmedEvent = {
 
-    constructor(
-        public playerid:number,
-        public chosencards:number[],
-    ){
-
-    }
+    playerid:number,
+    chosencards:number[],
 }
 
-class TileClickEvent{
-    constructor(
-        public playerid:number,
-        public tileid:number,
-    ){
-
-    }
+type TileClickEvent = {
+    playerid:number,
+    tileid:number,
 }

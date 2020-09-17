@@ -30,13 +30,17 @@ enum PlayerStates{mulliganning,selectingtile,normal}
 class Player{
     
     
-    hand:Card[] = []
-    board:Card[] = []
+    hand:number[] = []
+    board:number[] = []
+    mulliganHand:{selected:boolean,card:number}[] = []
+    mulliganMin = 0
+    mulliganMax = 2
 
     passed:boolean = false
     actions:number = 2
     maxactions:number = 2
     terraformingpoints:number = 20
+    totalscore = 0
 
     
 
@@ -49,7 +53,6 @@ class Player{
     playerElement: PlayerElement
 
     playerState:PlayerStates = PlayerStates.normal
-    mulliganHand:{selected:boolean,card:Card}[] = []
 
 
     constructor(

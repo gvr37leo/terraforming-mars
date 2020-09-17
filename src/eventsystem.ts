@@ -11,11 +11,18 @@ class Box<T>{
     }
 
     set(val:T){
-        if(val != this.value){
-            this.beforeChange.trigger(this.value)
-            this.value = val
-            this.afterChange.trigger(this.value)
-        }
+        this.beforeChange.trigger(this.value)
+        this.value = val
+        this.afterChange.trigger(this.value)
+    }
+}
+
+class QueueBox<T> extends Box<T>{
+    constructor(val:T,public eventQueue:GameEvent[],eventCreator:(v:T) => GameEvent){
+        super(val)
+        this.afterChange.listen((val) => {
+            eventQueue.push(eventCreator(val))
+        })
     }
 }
 

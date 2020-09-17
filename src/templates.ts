@@ -50,6 +50,7 @@ function getplayerrefs():PlayerElement{
         board:html.querySelector('#board'),
         playerturntoken:html.querySelector('#playerturntoken'),
         playerstarttoken:html.querySelector('#playerstarttoken'),
+        mulligan:html.querySelector('#mulligan'),
     }
 }
 
@@ -59,11 +60,14 @@ function updatePlayerData(player:Player){
     html.playerstarttoken.innerText = (game.firsplayerMarker == player.id) ? 'true' : 'false'
     html.playerturntoken.innerText = (game.playerturnMarker == player.id) ? 'true' : 'false'
 
-    for(var card of player.hand){
-        this.updateCardData(card)
+    for(let card of player.hand){
+        updateCardData(card)
     }
-    for(var card of player.board){
-        this.updateCardData(card)
+    for(let card of player.board){
+        updateCardData(card)
+    }
+    for(let mulligancard of player.mulliganHand){
+        updateCardData(mulligancard.card)
     }
     this.updateResourceData(player.money)
     this.updateResourceData(player.metal)
@@ -183,7 +187,7 @@ function updateCardData(card:Card){
     var html = card.cardElement
     html.cardid.innerText = card.id.toString()
     html.effect.innerHTML = ''
-    html.effect.appendChild(card.render(card))
+    html.effect.appendChild(card.renderDescription(card))
     html.flavortext.innerText = card.flavortext
     html.image.src = card.imageurl
     html.title.innerText = card.title

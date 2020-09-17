@@ -39,3 +39,23 @@ class CardElement{
     effect: HTMLElement;
     flavortext: HTMLElement;
 }
+
+
+
+class MilestoneElement{
+    root: HTMLElement;
+    title: HTMLElement;
+    claimedby: HTMLElement;
+}
+
+class AwardElement{
+    root: HTMLElement;
+    title: HTMLElement;
+    funded:HTMLElement
+}
+
+class StandardProjectElement{
+    root: HTMLElement;
+    price: HTMLElement;
+    product: HTMLElement;
+}

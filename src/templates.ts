@@ -1,3 +1,8 @@
+
+
+
+
+
 function getgameboardrefs():GameBoardElement{
     var gameboardtemplate = document.querySelector('#gameboardtemplate')
     var html = string2html(gameboardtemplate.innerHTML)
@@ -27,6 +32,11 @@ function updateGameBoardData(gameboard:Game){
     }
     html.tileboard
 }
+
+
+
+
+
 
 function getplayerrefs():PlayerElement{
     var playertemplate = document.querySelector('#playertemplate')
@@ -63,6 +73,19 @@ function updatePlayerData(player:Player){
     this.updateResourceData(player.heat)
 }
 
+
+
+
+
+
+function updateResourceData(resource:Resource){
+    var html = resource.element
+    html.label.innerText = resource.name.toString()
+    html.instock.innerText = resource.instock.toString()
+    html.moneyvalue.innerText = resource.moneyvalue.toString()
+    html.production.innerText = resource.production.toString()
+}
+
 function getResourceRefs():ResourceElement{
     var playertemplate = document.querySelector('#resourcetemplate')
     var html = string2html(playertemplate.innerHTML)
@@ -76,13 +99,68 @@ function getResourceRefs():ResourceElement{
     }
 }
 
-function updateResourceData(resource:Resource){
-    var html = resource.element
-    html.label.innerText = resource.name.toString()
-    html.instock.innerText = resource.instock.toString()
-    html.moneyvalue.innerText = resource.moneyvalue.toString()
-    html.production.innerText = resource.production.toString()
+function updateMilestoneData(milestone:Milestone){
+    var html = milestone.element
+
+    html.claimedby.innerText = findbyid<Player>(game.players,milestone.claimedBy)?.name ?? 'unclaimed'
+    html.title.innerText = milestone.title
 }
+
+
+function getMilestoneRefs():MilestoneElement{
+    var playertemplate = document.querySelector('#milestonetemplate')
+    var html = string2html(playertemplate.innerHTML)
+
+    return{
+        root:html,
+        title:html.querySelector('#title'),
+        claimedby:html.querySelector('#claimedby'),
+    }
+}
+
+function updateAwardData(award:Award){
+    var html = award.element
+    html.funded.innerText = award.funded ? 'true' : 'false'
+    html.title.innerText = award.title
+}
+
+
+function getAwardRefs():AwardElement{
+    var playertemplate = document.querySelector('#awardtemplate')
+    var html = string2html(playertemplate.innerHTML)
+
+    return{
+        root:html,
+        title:html.querySelector('#title'),
+        funded:html.querySelector('#funded'),
+    }
+}
+
+
+
+function updateStandardprojectData(resource:StandardProject){
+    var html = resource.element
+
+    html.price.innerText = resource.price.toString()
+    html.product.innerHTML = ''
+    html.product.appendChild(resource.renderProduct())
+}
+
+function getStandardprojectRefs():StandardProjectElement{
+    var playertemplate = document.querySelector('#standardprojecttemplate')
+    var html = string2html(playertemplate.innerHTML)
+
+    return{
+        root:html,
+        price:html.querySelector('#price'),
+        product:html.querySelector('#product'),
+    }
+}
+
+
+
+
+
 
 function getcardrefs():CardElement{
     var cardtemplate = document.querySelector('#cardtemplate')
@@ -111,6 +189,6 @@ function updateCardData(card:Card){
     html.title.innerText = card.title
     html.cost.innerText = card.cost.toString()
     html.rules.innerText = card.rules.length.toString()
-    html.tags.innerText = card.tags.join(',')
+    html.tags.innerText = card.tags.map(t => Tags[t]) .join(',')
 
 }

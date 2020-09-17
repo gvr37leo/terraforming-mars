@@ -68,8 +68,8 @@ class Game{
     standardProjects:StandardProject[] = globalstandardprojects
 
     
-    milestones = milestones//cost 8,8,8 35 terra, 3 cities, 3 trees, 10 buildings, 18 cards (5 vcitory points) can be bought if requirement met
-    awards//8,14,20 can be bought anytime, received at end of game -> most land, most money, most science tags, most heat, most metal/titanium
+    milestones = globalmilestones
+    awards = globalawards
 
     generation:Box<number> = new Box(0)
     turn:Box<number> = new Box(0)
@@ -211,7 +211,7 @@ class Game{
             var project = findbyid(this.standardProjects,event.projectid)  
             var player = findbyid(this.players,event.playerid)
             player.money.instock -= project.price
-            project.cb()
+            project.boughtCallback()
         })
         this.listen(EventTypes.actioncard,(e) => {
             
@@ -279,6 +279,27 @@ class Game{
         this.gameboardElement = getgameboardrefs() 
         this.containerelement.appendChild(this.gameboardElement.root)
         //render board
+
+        this.gameboardElement.awards.innerHTML = ''
+        for(var award of this.awards){
+            award.element = getAwardRefs()
+            updateAwardData(award)
+            this.gameboardElement.awards.appendChild(award.element.root)
+        }
+
+        this.gameboardElement.milestones.innerHTML = ''
+        for(var milestone of this.milestones){
+            milestone.element = getMilestoneRefs()
+            updateMilestoneData(milestone)
+            this.gameboardElement.milestones.appendChild(milestone.element.root)
+        }
+
+        this.gameboardElement.standardprojects.innerHTML = ''
+        for(var standardproject of this.standardProjects){
+            standardproject.element = getStandardprojectRefs()
+            updateStandardprojectData(standardproject)
+            this.gameboardElement.standardprojects.appendChild(standardproject.element.root)
+        }
 
         for(var player of this.players){
             player.playerElement = getplayerrefs()

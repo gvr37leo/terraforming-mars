@@ -12,7 +12,7 @@ class Listener{
 
 }
 
-let cardsTable:Card[] = []
+let cardTable:Card[] = []
 
 class Game{
 
@@ -77,8 +77,8 @@ class Game{
 
     init(){
         this.listen(EventTypes.gamestart, e => {
-            cardsTable = generateRandomCards(50) 
-            this.deck = cardsTable.map(c => c.id)
+            cardTable = generateRandomCards(50) 
+            this.deck = cardTable.map(c => c.id)
             this.phase.set(Phases.turnorder)
         })
         
@@ -254,14 +254,14 @@ class Game{
 
         this.gameboardElement.milestones.innerHTML = ''
         for(let milestone of this.milestones){
-            milestone.element = getMilestoneRefs()
+            milestone.element = getMilestoneTemplate()
             updateMilestoneData(milestone)
             this.gameboardElement.milestones.appendChild(milestone.element.root)
         }
 
         this.gameboardElement.standardprojects.innerHTML = ''
         for(let standardproject of this.standardProjects){
-            standardproject.element = getStandardprojectRefs()
+            standardproject.element = getStandardprojectTemplate()
             updateStandardprojectData(standardproject)
             this.gameboardElement.standardprojects.appendChild(standardproject.element.root)
         }
@@ -271,29 +271,27 @@ class Game{
             this.gameboardElement.players.appendChild(player.playerElement.root)
 
             
-            player.money.element = getResourceRefs()
+            player.money.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.money.element.root)
-            player.metal.element = getResourceRefs()
+            player.metal.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.metal.element.root)
-            player.titanium.element = getResourceRefs()
+            player.titanium.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.titanium.element.root)
-            player.forest.element = getResourceRefs()
+            player.forest.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.forest.element.root)
-            player.electricity.element = getResourceRefs()
+            player.electricity.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.electricity.element.root)
-            player.heat.element = getResourceRefs()
+            player.heat.element = genResourceTemplate()
             player.playerElement.resources.appendChild(player.heat.element.root)
             
 
             for(let cardid of player.hand){
-                let card = findbyid(cardsTable,cardid)
-                card.cardElement = getcardrefs()
+                let card = findbyid(cardTable,cardid)
                 player.playerElement.board.appendChild(card.cardElement.root)
             }
 
             for(let cardid of player.board){
-                let card = findbyid(cardsTable,cardid)
-                card.cardElement = getcardrefs()
+                let card = findbyid(cardTable,cardid)
                 player.playerElement.board.appendChild(card.cardElement.root)
             }
         }
@@ -313,7 +311,7 @@ class Game{
         var result = 0
         result += player.terraformingpoints
         for(var cardid of player.board){
-            var card = findbyid(cardsTable,cardid)
+            var card = findbyid(cardTable,cardid)
             result += card.victorypoints
             //card.victorypoints should be a callback (certain cards need calculation like the bacteria cards)
         }

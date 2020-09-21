@@ -150,6 +150,7 @@ function generateRandomCards(n:number):Card[]{
         )
         card.id = i
         card.imageurl = 'https://cdn.shopify.com/s/files/1/0220/1594/products/pic3615573_md_600x600.png?v=1506572675'
+        card.cardElement = getcardrefs()
         result.push(card)
     }
     return result

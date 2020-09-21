@@ -66,7 +66,11 @@ function updatePlayerData(player:Player){
     for(let card of player.board){
         updateCardData(card)
     }
+    
+    player.playerElement.mulligan.innerHTML = ''
     for(let mulligancard of player.mulliganHand){
+        var card = findbyid(cardTable,mulligancard.card) 
+        player.playerElement.mulligan.appendChild(card.cardElement.root)
         updateCardData(mulligancard.card)
     }
     this.updateResourceData(player.money)
@@ -90,7 +94,7 @@ function updateResourceData(resource:Resource){
     html.production.innerText = resource.production.toString()
 }
 
-function getResourceRefs():ResourceElement{
+function genResourceTemplate():ResourceElement{
     var playertemplate = document.querySelector('#resourcetemplate')
     var html = string2html(playertemplate.innerHTML)
 
@@ -111,7 +115,7 @@ function updateMilestoneData(milestone:Milestone){
 }
 
 
-function getMilestoneRefs():MilestoneElement{
+function getMilestoneTemplate():MilestoneElement{
     var playertemplate = document.querySelector('#milestonetemplate')
     var html = string2html(playertemplate.innerHTML)
 
@@ -150,7 +154,7 @@ function updateStandardprojectData(resource:StandardProject){
     html.product.appendChild(resource.renderProduct())
 }
 
-function getStandardprojectRefs():StandardProjectElement{
+function getStandardprojectTemplate():StandardProjectElement{
     var playertemplate = document.querySelector('#standardprojecttemplate')
     var html = string2html(playertemplate.innerHTML)
 
@@ -183,7 +187,8 @@ function getcardrefs():CardElement{
     }
 }
 
-function updateCardData(card:Card){
+function updateCardData(cardid:number){
+    var card = findbyid(cardTable,cardid) 
     var html = card.cardElement
     html.cardid.innerText = card.id.toString()
     html.effect.innerHTML = ''

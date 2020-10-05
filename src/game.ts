@@ -235,68 +235,110 @@ class Game{
         return this.players[this.playerturnMarker]
     }
 
+    initHtml(){
+        this.gameboardElement = getgameboardrefs() 
+        this.containerelement.appendChild(this.gameboardElement.root)
+
+        for(var i = 0; i < 4;i++){
+            var playerref = getplayerrefs()
+            this.gameboardElement.players.appendChild(playerref.root)
+        }
+        
+        var money = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(money.root)
+        var metal = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(metal.root)
+        var titanium = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(titanium.root)
+        var plants = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(plants.root)
+        var electricity = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(electricity.root)
+        var heat = genResourceTemplate()
+        this.gameboardElement.resources.appendChild(heat.root)
+        //milestones
+        //standard projects
+        //awards
+
+        //playerlist
+
+        //infobar
+        //resources
+        //company
+        
+
+        //modal
+            //cards
+            //
+
+
+        //meter
+        //gen
+
+    }
+
     render(){
 
         
-        let companytemplate = document.querySelector('#companytemplate')
+        // let companytemplate = document.querySelector('#companytemplate')
         
         
-        this.gameboardElement = getgameboardrefs() 
-        this.containerelement.appendChild(this.gameboardElement.root)
-        //render board
+        // this.gameboardElement = getgameboardrefs() 
+        // this.containerelement.appendChild(this.gameboardElement.root)
+        // //render board
 
-        this.gameboardElement.awards.innerHTML = ''
-        for(let award of this.awards){
-            award.element = getAwardRefs()
-            updateAwardData(award)
-            this.gameboardElement.awards.appendChild(award.element.root)
-        }
+        // this.gameboardElement.awards.innerHTML = ''
+        // for(let award of this.awards){
+        //     award.element = getAwardRefs()
+        //     updateAwardData(award)
+        //     this.gameboardElement.awards.appendChild(award.element.root)
+        // }
 
-        this.gameboardElement.milestones.innerHTML = ''
-        for(let milestone of this.milestones){
-            milestone.element = getMilestoneTemplate()
-            updateMilestoneData(milestone)
-            this.gameboardElement.milestones.appendChild(milestone.element.root)
-        }
+        // this.gameboardElement.milestones.innerHTML = ''
+        // for(let milestone of this.milestones){
+        //     milestone.element = getMilestoneTemplate()
+        //     updateMilestoneData(milestone)
+        //     this.gameboardElement.milestones.appendChild(milestone.element.root)
+        // }
 
-        this.gameboardElement.standardprojects.innerHTML = ''
-        for(let standardproject of this.standardProjects){
-            standardproject.element = getStandardprojectTemplate()
-            updateStandardprojectData(standardproject)
-            this.gameboardElement.standardprojects.appendChild(standardproject.element.root)
-        }
+        // this.gameboardElement.standardprojects.innerHTML = ''
+        // for(let standardproject of this.standardProjects){
+        //     standardproject.element = getStandardprojectTemplate()
+        //     updateStandardprojectData(standardproject)
+        //     this.gameboardElement.standardprojects.appendChild(standardproject.element.root)
+        // }
 
-        for(let player of this.players){
-            player.playerElement = getplayerrefs()
-            this.gameboardElement.players.appendChild(player.playerElement.root)
+        // for(let player of this.players){
+        //     player.playerElement = getplayerrefs()
+        //     this.gameboardElement.players.appendChild(player.playerElement.root)
 
             
-            player.money.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.money.element.root)
-            player.metal.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.metal.element.root)
-            player.titanium.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.titanium.element.root)
-            player.forest.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.forest.element.root)
-            player.electricity.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.electricity.element.root)
-            player.heat.element = genResourceTemplate()
-            player.playerElement.resources.appendChild(player.heat.element.root)
+        //     player.money.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.money.element.root)
+        //     player.metal.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.metal.element.root)
+        //     player.titanium.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.titanium.element.root)
+        //     player.forest.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.forest.element.root)
+        //     player.electricity.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.electricity.element.root)
+        //     player.heat.element = genResourceTemplate()
+        //     player.playerElement.resources.appendChild(player.heat.element.root)
             
 
-            for(let cardid of player.hand){
-                let card = findbyid(cardTable,cardid)
-                player.playerElement.board.appendChild(card.cardElement.root)
-            }
+        //     for(let cardid of player.hand){
+        //         let card = findbyid(cardTable,cardid)
+        //         player.playerElement.board.appendChild(card.cardElement.root)
+        //     }
 
-            for(let cardid of player.board){
-                let card = findbyid(cardTable,cardid)
-                player.playerElement.board.appendChild(card.cardElement.root)
-            }
-        }
+        //     for(let cardid of player.board){
+        //         let card = findbyid(cardTable,cardid)
+        //         player.playerElement.board.appendChild(card.cardElement.root)
+        //     }
+        // }
 
-        updateGameBoardData(this)
+        // updateGameBoardData(this)
     }
 
     checkIfGameFinished(){

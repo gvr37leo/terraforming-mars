@@ -8,17 +8,15 @@ class GameBoardElement{
     milestones: HTMLElement;
     awards: HTMLElement;
     players: HTMLElement;
+
+    company:HTMLElement
+    resources:HTMLElement
+    cards:HTMLElement    
 }
 
 class PlayerElement{
     root: HTMLElement;
-    playername: HTMLElement
-    resources: HTMLElement;
-    cards: HTMLElement;
-    board: HTMLElement;
-    mulligan: HTMLElement;
-    playerturntoken: HTMLElement;
-    playerstarttoken: HTMLElement;
+    playername: HTMLElement;
 }
 
 class ResourceElement{

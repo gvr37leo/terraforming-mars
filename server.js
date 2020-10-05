@@ -42,7 +42,7 @@ function initGame(parent){
     
 }
 
-function goUpAndDOwn(srcknotid:string,objdefnames:string[]){
+function goUpAndDOwn(srcknotid,objdefnames){
     //could also do this by mapping name to objdefids
     //var objdefids = objdefnames.map(name => objdef.find(od => od.name == name)._id)
     //searchup(objdefids[0])
@@ -55,7 +55,7 @@ function goUpAndDOwn(srcknotid:string,objdefnames:string[]){
 
 
 
-function insertObject(objdefname,parent,object:any):string{
+function insertObject(objdefname,parent,object){
     return null
 }
 
@@ -182,7 +182,7 @@ server
                 name:string
                 rules:Rule[],:callback
                 cost:number
-                victorypoints:number,func
+                victorypoints:number
                 tags:Tag[]
                 mulliganSelected:boolean
                 imageurl:string
@@ -196,3 +196,4 @@ server
 
 
 */
+  

@@ -16,6 +16,10 @@ function getgameboardrefs():GameBoardElement{
         milestones:html.querySelector('#milestones'),
         awards:html.querySelector('#awards'),
         players:html.querySelector('#players'),
+
+        company:html.querySelector('#company'),
+        resources:html.querySelector('#resources'),
+        cards:html.querySelector('#cards'),
     }
 }
 
@@ -45,40 +49,12 @@ function getplayerrefs():PlayerElement{
     return{
         root:html,
         playername:html.querySelector('#playername'),
-        resources:html.querySelector('#resources'),
-        cards:html.querySelector('#cards'),
-        board:html.querySelector('#board'),
-        playerturntoken:html.querySelector('#playerturntoken'),
-        playerstarttoken:html.querySelector('#playerstarttoken'),
-        mulligan:html.querySelector('#mulligan'),
     }
 }
 
 function updatePlayerData(player:Player){
     var html = player.playerElement
     html.playername.innerText = player.name
-    html.playerstarttoken.innerText = (game.firsplayerMarker == player.id) ? 'true' : 'false'
-    html.playerturntoken.innerText = (game.playerturnMarker == player.id) ? 'true' : 'false'
-
-    for(let card of player.hand){
-        updateCardData(card)
-    }
-    for(let card of player.board){
-        updateCardData(card)
-    }
-    
-    player.playerElement.mulligan.innerHTML = ''
-    for(let mulligancard of player.mulliganHand){
-        var card = findbyid(cardTable,mulligancard.card) 
-        player.playerElement.mulligan.appendChild(card.cardElement.root)
-        updateCardData(mulligancard.card)
-    }
-    this.updateResourceData(player.money)
-    this.updateResourceData(player.metal)
-    this.updateResourceData(player.titanium)
-    this.updateResourceData(player.forest)
-    this.updateResourceData(player.electricity)
-    this.updateResourceData(player.heat)
 }
 
 

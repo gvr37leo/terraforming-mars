@@ -25,5 +25,6 @@ includeHTML().then(() => {
 
     game.queueEvent(new GameEvent(EventTypes.gamestart,{}))
     game.processQueue()
-    game.render()
+    game.initHtml()
+    
 })

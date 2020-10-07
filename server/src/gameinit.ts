@@ -1,7 +1,9 @@
 
 var gamedata = []
 var idcounter = 0;
-
+export function getData(){
+    return gamedata
+}
 function initLobby(){
     var lobby = {
 
@@ -9,8 +11,8 @@ function initLobby(){
 }
 
 //call on lobby gamestart
-function initGame(parent){
-    var gameid = insertObject({
+export function initGame(parent){
+    var gameid = insertObject('','',{
         generation:0,
         phase:'research',
         firstplayerMarker:0,
@@ -110,11 +112,4 @@ function insertResource(name,parent,minimum,production,current,moneyvalue){
         current,
         moneyvalue,
     })
-}
-
-module.exports = {
-    initGame,
-    getData:() => {
-        return gamedata
-    }
 }

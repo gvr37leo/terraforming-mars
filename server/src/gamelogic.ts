@@ -1,10 +1,13 @@
 class EventQueue{
+    listeners
+    events
+
     constructor(){
         this.listeners = []
         this.events = []
     }
 
-    listen(){
+    listen(a,b){
 
     }
 
@@ -15,7 +18,7 @@ class EventQueue{
 
 var eventqueue = new EventQueue()
 
-function processGameEvents(gamedata){
+export function processGameEvents(gamedata){
     var gameknot = gamedata.find(k => k.name == 'game')
     var eventsfolder = gamedata.find(k => k.name == 'eventsqueue')
     var events = gamedata.filter(k => k.parent == eventsfolder._id)
@@ -97,9 +100,4 @@ function processGameEvents(gamedata){
     eventqueue.process()
     
 
-}
-
-
-module.exports = {
-    processGameEvents
 }

@@ -9,5 +9,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "utilsx": "^2.0.0",
+    "vectorx": "^3.3.1"
+  }
 }

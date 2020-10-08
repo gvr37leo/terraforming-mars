@@ -1,8 +1,13 @@
+/// <reference path="./node_modules/vectorx/vector.ts" />
+/// <reference path="./node_modules/utilsx/utils.ts" />
 /// <reference path="ajax.ts" />
-
-// import { test } from './ajax'
-
+/// <reference path="modal.ts" />
 
 
-var x = 12;
-x = test()
+var modal = new Modal()
+document.body.appendChild(modal.rootelement)
+
+var asd = string2html(`<div>hello</div>`)
+
+modal.set(asd)
+

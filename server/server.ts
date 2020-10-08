@@ -1,11 +1,11 @@
 import {initGame,getData} from './src/gameinit'
-var {processGameEvents} = require('./serverfiles/gamelogic')
-var express = require('express')
+import {processGameEvents} from './src/gamelogic'
+import express from 'express'
 var app = express()
 initGame('')
 var gamedata = getData()
 
-app.use(express.static('./'))
+app.use(express.static('../client'))
 
 app.listen(8000, () => {
     console.log('listening')
@@ -17,7 +17,7 @@ app.get('/api/getgame', (req,res) => {
 
 app.post('/api/pushevent',(req,res) => {
     var eventfolder = gamedata.find(k => k.name == 'eventqueue')
-    var event = req.data
+    var event = req.body
     gamedata.push({
         parent:eventfolder.id,
         type:event.type,

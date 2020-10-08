@@ -26,27 +26,55 @@ export function initGame(parent){
     //var guests = goUpAndDown([lobbydef.id,playersfolder.id])
     var playerfolderid = insertObject('playerfolder',gameid,{})
     var guests = []
-    for(var guest of guests){
+    for(var i = 0; i < 4; i++){
         initPlayer(playerfolderid)
         //todo:insert guest data into player
     }
 
     var deckfolderid = insertObject('deckfolder',gameid,{})
+    for(var i = 0; i < 50;i++){
+        initCard(deckfolderid)
+    }
     var discardfolderid = insertObject('discardfolder',gameid,{})
     var eventfolder = insertObject('eventfolder',gameid,{})
     
+    var awardsfolderid = insertObject('awardsfolder',gameid,{})
+    insertObject('award',awardsfolderid,{
+        name:'gardener'
+    })
+    insertObject('award',awardsfolderid,{
+        name:'gardener'
+    })
+    insertObject('award',awardsfolderid,{
+        name:'gardener'
+    })
+    insertObject('award',awardsfolderid,{
+        name:'gardener'
+    })
+
+    var milestonefolderid = insertObject('milestonefolder',gameid,{})
+    insertObject('milestone',milestonefolderid,{
+        name:'buildings'
+    })
+    insertObject('milestone',milestonefolderid,{
+        name:'buildings'
+    })
+    insertObject('milestone',milestonefolderid,{
+        name:'buildings'
+    })
+    insertObject('milestone',milestonefolderid,{
+        name:'buildings'
+    })
 }
 
-
-
-
-function insertObject(objdefname,parent,object){
-    object.parent = parent
-    object.objdef = objdefname
-    object._id = idcounter++
-    gamedata.push(object)
-    return object._id
+function initAward(){
+    
 }
+
+function initMilestone(){
+
+}
+
 
 function initMeter(name,min,max,step,current,parent){
     insertObject('meter',parent,{
@@ -112,4 +140,14 @@ function insertResource(name,parent,minimum,production,current,moneyvalue){
         current,
         moneyvalue,
     })
+}
+
+
+
+function insertObject(objdefname,parent,object){
+    object.parent = parent
+    object.objdef = objdefname
+    object._id = idcounter++
+    gamedata.push(object)
+    return object._id
 }

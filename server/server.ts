@@ -1,9 +1,9 @@
 import {initGame,getData} from './src/gameinit'
-import {processGameEvents} from './src/gamelogic'
+import {GameManager} from './src/gamelogic'
 import express from 'express'
 var app = express()
 initGame('')
-var gamedata = getData()
+var gamemanager = new GameManager(getData())
 
 app.use(express.static('../client'))
 
@@ -12,19 +12,20 @@ app.listen(8000, () => {
 })
 
 app.get('/api/getgame', (req,res) => {
-    res.send(gamedata)
+    res.send(gamemanager.gamedata)
 })
 
 app.post('/api/pushevent',(req,res) => {
-    var eventfolder = gamedata.find(k => k.name == 'eventqueue')
+    var eventfolder = gamemanager.gamedata.find(k => k.name == 'eventqueue')
     var event = req.body
-    gamedata.push({
-        parent:eventfolder.id,
+    gamemanager.gamedata.push({
+        parent:eventfolder._id,
         type:event.type,
         data:event.data
     })
-    processGameEvents(gamedata)
-    res.send(gamedata)
+    gamemanager.processGameEvents()
+    
+    res.send(gamemanager.gamedata)
 })
 
 

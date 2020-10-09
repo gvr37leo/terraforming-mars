@@ -22,7 +22,7 @@ class EventQueue{
 
 
 
-class GameManager{
+export class GameManager{
     eventqueue = new EventQueue()
     gameknot: Game
     oxygenmeter: Meter
@@ -46,7 +46,12 @@ class GameManager{
 
 
     processGameEvents(){
-        var events = this.getChildrenOfFolder('eventsfolder')
+        //get gamedata from server
+        //process it
+        //delete all nodes beneath game(only nescessary if nodes are deleted)(could also just keep track of deletedknodes and only delele those)
+        //upsert it back to database
+
+        var events = searchData('/game;{id:9}/eventsfolder/event',this.gamedata)
         this.eventqueue.events.push(...events)
     
     
@@ -57,29 +62,31 @@ class GameManager{
     
         this.eventqueue.listen('phasechange',(e) => {
             var phase = e.data
+            var players = searchData('playerFolder/player',this.gamedata)
             if(phase == 'turnorder'){
-                this.firsplayerMarker = (this.firsplayerMarker + 1) % this.players.length
-                this.phase.set(Phases.research)
+                this.gameknot.firsplayerMarker = (this.gameknot.firsplayerMarker + 1) % players.length
+                this.setPhase('research')
             }else if(phase == 'research'){
-                for(let player of this.players){
-                    this.pickCards(this.deck.splice(0,2),0,3,player.id)
+                var deck = searchData('game/deck/card',this.gamedata).map(k => k._id)
+                for(let player of players){
+                    this.pickCards(deck.splice(0,2),0,3,player.id)
                 }
             }else if(phase == 'action'){
                 //is entered via mulliganconfirmed event when everyone has confirmed their mulligan
                 //for now nothing actually happens at action phase start
                 //is exited when everyone hass passed
             }else if(phase == 'production'){
-                for(let player of this.players){
+                for(let player of players){
                     player.passed = false
-                    player.metal.produce()
-                    player.money.produce()
-                    player.titanium.produce()
-                    player.forest.produce()
-                    player.electricity.produce()
-                    player.heat.produce()
+                    produceresource(player.metal)
+                    produceresource(player.money)
+                    produceresource(player.titanium)
+                    produceresource(player.forest)
+                    produceresource(player.electricity)
+                    produceresource(player.heat)
                 }
                 //could do some animations but for now just go to next phase immediatly
-                this.phase.set(Phases.turnorder)
+                this.setPhase('turnorder')
             }
         })
     
@@ -88,22 +95,23 @@ class GameManager{
         })
     
         this.eventqueue.listen('pass',(e) => {
+            var players = searchData('playerFolder/player',this.gamedata)
             let player = this.getActivePlayer()
             player.passed = true
 
             //get the first player that hast passed
             //if everyone has passed go to increase generation and go to next phase
             let nexteligebleplayer:Player = null
-            for(let i = 0; i < this.players.length - 1; i++){
-                let nextplayer = this.players[(this.playerturnMarker + i + 1) % this.players.length]
+            for(let i = 0; i < players.length - 1; i++){
+                let nextplayer = players[(this.gameknot.playerturnMarker + i + 1) % players.length]
                 if(nextplayer.passed == false){
                     nexteligebleplayer = nextplayer
                 }
             }
             if(nexteligebleplayer == null){
-                this.phase.set(Phases.production)
+                this.setPhase('production')
             }else{
-                this.playerturnMarker = (this.playerturnMarker + 1) % this.players.length
+                this.gameknot.playerturnMarker = (this.gameknot.playerturnMarker + 1) % players.length
                 //playerturn change event
             }
         })
@@ -164,7 +172,7 @@ class GameManager{
     
         this.eventqueue.listen('gamefinished',(e) => {
             console.log('game finished')
-            var players:Player[] = this.searchData('playerFolder/player') as any
+            var players:Player[] = searchData('playerFolder/player',this.gamedata) as any
             for(var player of players){
                 player.totalscore = this.calculatePlayerScore(player)
             }
@@ -173,19 +181,27 @@ class GameManager{
             var winner = last(sortedplayers)
             alert(`and the winner is ${winner.name}`)
         })
-    
-        
-    
+    }
+
+    getActivePlayer(){
+        var players:Player[] = searchData('playerFolder/player',this.gamedata) as any
+        return players[this.gameknot.playerturnMarker]
+    }
+
+    setPhase(phase:string){
+        this.gameknot.phase = phase
+        this.eventqueue.addAndTrigger('phasechange',{phase})
     }
     
     pickCards(cardidoptions:number[],min:number,max:number,playerid:number){
-        let player = findbyid(this.players,playerid)
-        player.playerState = PlayerStates.mulliganning
-        player.mulliganHand = cardidoptions.map(id => {
-            return {
-                selected:false,
-                card:id,
-            }
+        let player = searchData('player',this.gamedata)[0] as Player
+        let playermulliganfolder = searchData('player/mulliganfolder',this.gamedata)[0]
+        let cards = searchData('player/mulliganfolder/card',this.gamedata) as Card[]
+        player.mulliganMin = min
+        player.mulliganMax = max
+        cards.forEach(c => {
+            c.parent = playermulliganfolder._id
+            c.mulliganselected = false
         })
     }
     
@@ -201,7 +217,7 @@ class GameManager{
         
         var result = 0
         result += player.terraformingpoints
-        var cards = searchData('player[id:9]/board/card',this.gamedata)
+        var cards = searchData('player,{id:9}/board/card',this.gamedata)
         for(var card of cards){
             result += card.victorypoints
         }
@@ -209,18 +225,57 @@ class GameManager{
     }
 }
 
-function searchData(query:string,knots:Knot[]):any[]{
-    var parentSet = new Set<string>()
-    var queryparts = query.split('/')
-    var firstpart = queryparts[0]
 
-    knots.filter(k => k.objdef == firstpart).forEach(k => parentSet.add(k._id))
+function produceresource(resource:Resource){
+    resource.instock += resource.production
+}
+
+//searchData('/player,{id:9}/hand/card')
+
+function createQuery(query:string):any[]{
+    var parts = query.split('/')
+
+    var res = parts.map(part => {
+        var splittedparts = part.split(',')
+        
+        if(splittedparts.length == 1){
+            return {
+                objdef:splittedparts[0]
+            }
+        }
+        if(splittedparts.length == 2){
+            var jsondata = JSON.parse(splittedparts[1])
+            jsondata.objdef = splittedparts[0]
+        }
+    })
+    return res
+}
+
+function searchData(querystring:string,knots:Knot[]):any[]{
+    var query = createQuery(querystring)
+    var parentSet = new Set<string>()
+    var firstpart = query[0]
+    knots.filter(k => equals(firstpart,k)).forEach(k => parentSet.add(k._id))
+
     var childknots:Knot[]
-    for(var i = 1; i < queryparts.length;i++){
-        childknots = knots.filter(k => k.objdef == queryparts[i] && parentSet.has(k.parent))
+    for(var i = 1; i < query.length;i++){
+        childknots = knots.filter(k => equals(k,query[i]) && parentSet.has(k.parent))
         parentSet = new Set<string>()
         childknots.forEach(k => parentSet.add(k._id))
     }
 
     return childknots
+}
+
+function equals(query,object){
+    for(var prop in query){
+        if(query[prop] != object[prop]){
+            return false
+        }
+    }
+    return true
+}
+
+function last(arr){
+    return arr[arr.length - 1]
 }

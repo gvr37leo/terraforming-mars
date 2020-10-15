@@ -1,3 +1,11 @@
+import { Card } from './models/card'
+import {GameEvent} from './models/events'
+import {Game} from './models/game'
+import { Knot } from './models/knot'
+import { Meter } from './models/meter'
+import { Player } from './models/player'
+import { Resource } from './models/resource'
+
 class EventQueue{
     listeners
     events:GameEvent[]

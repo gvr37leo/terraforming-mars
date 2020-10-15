@@ -1,3 +1,4 @@
+
 class Corporation extends Knot{
     tags
     startmoney

@@ -1,14 +1,14 @@
 import {initGame,getData} from './src/gameinit'
 import {GameManager} from './src/gamelogic'
 import express from 'express'
+var port = 8000
 var app = express()
-initGame('')
+initGame()
 var gamemanager = new GameManager(getData())
-
 app.use(express.static('../client'))
 
-app.listen(8000, () => {
-    console.log('listening')
+app.listen(port, () => {
+    console.log(`listening on localhost:${port}` )
 })
 
 app.get('/api/getgame', (req,res) => {
@@ -22,7 +22,7 @@ app.post('/api/pushevent',(req,res) => {
         parent:eventfolder._id,
         type:event.type,
         data:event.data
-    })
+    } as any)
     gamemanager.processGameEvents()
     
     res.send(gamemanager.gamedata)

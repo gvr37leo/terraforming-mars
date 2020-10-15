@@ -1,5 +1,6 @@
+import { Knot } from "./knot"
 
-class Player extends Knot{
+export class Player extends Knot{
     mulliganMin = 0
     mulliganMax = 2
 

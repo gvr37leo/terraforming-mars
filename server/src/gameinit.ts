@@ -11,8 +11,8 @@ function initLobby(){
 }
 
 //call on lobby gamestart
-export function initGame(parent){
-    var gameid = insertObject('','',{
+export function initGame(){
+    var gameid = insertObject('game',null,{
         generation:0,
         phase:'research',
         firstplayerMarker:0,
@@ -40,30 +40,38 @@ export function initGame(parent){
     
     var awardsfolderid = insertObject('awardsfolder',gameid,{})
     insertObject('award',awardsfolderid,{
-        name:'gardener'
+        name:'gardener',
+        funded:false,
     })
     insertObject('award',awardsfolderid,{
-        name:'gardener'
+        name:'gardener',
+        funded:false,
     })
     insertObject('award',awardsfolderid,{
-        name:'gardener'
+        name:'gardener',
+        funded:false,
     })
     insertObject('award',awardsfolderid,{
-        name:'gardener'
+        name:'gardener',
+        funded:false,
     })
 
     var milestonefolderid = insertObject('milestonefolder',gameid,{})
     insertObject('milestone',milestonefolderid,{
-        name:'buildings'
+        name:'buildings',
+        claimedBy:null,
     })
     insertObject('milestone',milestonefolderid,{
-        name:'buildings'
+        name:'buildings',
+        claimedBy:null,
     })
     insertObject('milestone',milestonefolderid,{
-        name:'buildings'
+        name:'buildings',
+        claimedBy:null,
     })
     insertObject('milestone',milestonefolderid,{
-        name:'buildings'
+        name:'buildings',
+        claimedBy:null,
     })
 }
 
@@ -109,16 +117,17 @@ function initCard(parent){
 }
 
 
-
+var playercounter = 0
 function initPlayer(parent){
      
      var playerid = insertObject('player',parent,{
-        name:'playername',
+        name:`player:${playercounter++}`,
         guestcookieid:'',
         actions:2,
         maxActions:2,
         terrapoints:0,
     })
+
 
     insertResource('money',playerid,0,0,0,1)
     insertResource('metal',playerid,0,0,0,2)
@@ -151,3 +160,4 @@ function insertObject(objdefname,parent,object){
     gamedata.push(object)
     return object._id
 }
+

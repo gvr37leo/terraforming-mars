@@ -21,10 +21,7 @@
 
 
 
-// var modal = new Modal()
-// document.body.appendChild(modal.rootelement)
-// var asd = string2html(`<div>hello</div>`)
-// modal.set(asd)
+
 includeHTML().then(() => {
     getGameData().then(data => {
         var gameinterface = new GameInterface()

@@ -1,11 +1,14 @@
-import {initGame,getData} from './src/gameinit'
+import {initGame} from './src/gameinit'
 import {GameManager} from './src/gamelogic'
 import express from 'express'
+
 var port = 8000
 var app = express()
-initGame()
-var gamemanager = new GameManager(getData())
 app.use(express.static('../client'))
+
+var gamedata:any[] = []
+var gamemanager:GameManager
+reset()
 
 app.listen(port, () => {
     console.log(`listening on localhost:${port}` )
@@ -23,11 +26,23 @@ app.post('/api/pushevent',(req,res) => {
         type:event.type,
         data:event.data
     } as any)
-    gamemanager.processGameEvents()
+    gamemanager.listenForGameEvents()
     
     res.send(gamemanager.gamedata)
 })
 
+app.post('/api/reset',(req,res) => {
+    reset()
+    res.send(gamedata)
+})
+
+function reset(){
+    
+    gamedata = initGame()
+    gamemanager = new GameManager(gamedata)
+    gamemanager.listenForGameEvents()
+    gamemanager.eventqueue.addAndTrigger('gamestart',{})
+}
 
 
 

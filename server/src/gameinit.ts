@@ -1,9 +1,7 @@
 
-var gamedata = []
+
 var idcounter = 0;
-export function getData(){
-    return gamedata
-}
+var gamedata
 function initLobby(){
     var lobby = {
 
@@ -12,6 +10,8 @@ function initLobby(){
 
 //call on lobby gamestart
 export function initGame(){
+    gamedata = []
+    idcounter = 0
     var gameid = insertObject('game',null,{
         generation:0,
         phase:'research',
@@ -73,6 +73,8 @@ export function initGame(){
         name:'buildings',
         claimedBy:null,
     })
+
+    return gamedata
 }
 
 function initAward(){
@@ -128,6 +130,8 @@ function initPlayer(parent){
         terrapoints:0,
     })
 
+    
+    insertCompany('some company name',playerid)
 
     insertResource('money',playerid,0,0,0,1)
     insertResource('metal',playerid,0,0,0,2)
@@ -141,12 +145,18 @@ function initPlayer(parent){
     insertObject('mulliganfolder',playerid,{})
 }
 
-function insertResource(name,parent,minimum,production,current,moneyvalue){
+function insertCompany(name,parent){
+    insertObject('company',parent,{
+        name,
+    })
+}
+
+function insertResource(name,parent,minimum,production,instock,moneyvalue){
     insertObject('resource',parent,{
         name,
         minimum,
         production,
-        current,
+        instock,
         moneyvalue,
     })
 }

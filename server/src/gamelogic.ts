@@ -7,7 +7,7 @@ import { Player } from './models/player'
 import { Resource } from './models/resource'
 
 class EventQueue{
-    listeners
+    listeners:{ eventtype: string; cb: (data: any) => void; }[]
     events:GameEvent[]
 
     constructor(){
@@ -15,16 +15,38 @@ class EventQueue{
         this.events = []
     }
 
-    listen(a,b){
-
+    listen(eventtype:string,cb:(data:any) => void){
+        this.listeners.push({
+            eventtype,
+            cb,
+        })
     }
 
     process(){
-
+        while(this.events.length > 0){
+            try {
+                let current = this.events.shift()
+                var listeners = this.listeners.filter(l => l.eventtype == current.eventtype)
+                for(var listener of listeners){
+                    listener.cb(current.data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+            
+        }
+    }
+    
+    add(eventtype:string,data:any){
+        this.events.push({
+            eventtype,
+            data,
+        } as any)
     }
 
-    addAndTrigger(type:string,data:any){
-
+    addAndTrigger(eventtype:string,data:any){
+        this.add(eventtype,data)
+        this.process()
     }
 }
 
@@ -37,7 +59,7 @@ export class GameManager{
     heatmeter: Meter
 
     constructor(public gamedata:Knot[]){
-        this.gameknot = this.gamedata.find(k => k.name == 'game') as any
+        this.gameknot = this.gamedata.find(k => k.objdef == 'game') as any
         this.oxygenmeter = this.gamedata.find(k => k.name == 'oxygenmeter') as any
         this.heatmeter = this.gamedata.find(k => k.name == 'heatmeter') as any
         
@@ -53,31 +75,30 @@ export class GameManager{
 
 
 
-    processGameEvents(){
+    listenForGameEvents(){
         //get gamedata from server
         //process it
         //delete all nodes beneath game(only nescessary if nodes are deleted)(could also just keep track of deletedknodes and only delele those)
         //upsert it back to database
 
-        var events = searchData('/game;{id:9}/eventsfolder/event',this.gamedata)
+        var events = searchData('/game,{"_id":9}/eventsfolder/event',this.gamedata)
         this.eventqueue.events.push(...events)
     
     
         this.eventqueue.listen('gamestart',(e) => {
-            //shuffle cards
-            //phase = turnorder
+            this.setPhase('turnorder')
         })
     
-        this.eventqueue.listen('phasechange',(e) => {
-            var phase = e.data
-            var players = searchData('playerFolder/player',this.gamedata)
+        this.eventqueue.listen('phasechange',(data) => {
+            var phase = data.phase
+            var players = searchData('playerfolder/player',this.gamedata)
             if(phase == 'turnorder'){
                 this.gameknot.firsplayerMarker = (this.gameknot.firsplayerMarker + 1) % players.length
                 this.setPhase('research')
             }else if(phase == 'research'){
-                var deck = searchData('game/deck/card',this.gamedata).map(k => k._id)
+                var deck = searchData('game/deckfolder/card',this.gamedata).map(k => k._id)
                 for(let player of players){
-                    this.pickCards(deck.splice(0,2),0,3,player.id)
+                    this.pickCards(deck.splice(0,4),0,4,player._id)
                 }
             }else if(phase == 'action'){
                 //is entered via mulliganconfirmed event when everyone has confirmed their mulligan
@@ -162,19 +183,19 @@ export class GameManager{
     
         this.eventqueue.listen('tileplaced',(e) => {
             if(this.checkIfGameFinished()){
-                this.eventqueue.addAndTrigger('gamefinished',{})
+                this.eventqueue.add('gamefinished',{})
             }
         })
     
         this.eventqueue.listen('heatincrease',(e) => {
             if(this.checkIfGameFinished()){
-                this.eventqueue.addAndTrigger('gamefinished',{})
+                this.eventqueue.add('gamefinished',{})
             }
         })
     
         this.eventqueue.listen('oxygenincrease',(e) => {
             if(this.checkIfGameFinished()){
-                this.eventqueue.addAndTrigger('gamefinished',{})
+                this.eventqueue.add('gamefinished',{})
             }
         })
     
@@ -198,13 +219,15 @@ export class GameManager{
 
     setPhase(phase:string){
         this.gameknot.phase = phase
-        this.eventqueue.addAndTrigger('phasechange',{phase})
+        this.eventqueue.add('phasechange',{phase})
     }
     
     pickCards(cardidoptions:number[],min:number,max:number,playerid:number){
-        let player = searchData('player',this.gamedata)[0] as Player
-        let playermulliganfolder = searchData('player/mulliganfolder',this.gamedata)[0]
-        let cards = searchData('player/mulliganfolder/card',this.gamedata) as Card[]
+        
+        let player = searchData(`player,{"_id":${playerid}}`,this.gamedata)[0] as Player
+        let playermulliganfolder = searchData(`player,{"_id":${playerid}}/mulliganfolder`,this.gamedata)[0]
+        // let cards = searchData(`game/deckfolder/card`,this.gamedata) as Card[]
+        var cards = cardidoptions.map(cardid => this.gamedata.find(k => k._id == cardid)) as Card[]
         player.mulliganMin = min
         player.mulliganMax = max
         cards.forEach(c => {
@@ -254,6 +277,7 @@ function createQuery(query:string):any[]{
         if(splittedparts.length == 2){
             var jsondata = JSON.parse(splittedparts[1])
             jsondata.objdef = splittedparts[0]
+            return jsondata
         }
     })
     return res
@@ -263,11 +287,15 @@ function searchData(querystring:string,knots:Knot[]):any[]{
     var query = createQuery(querystring)
     var parentSet = new Set<string>()
     var firstpart = query[0]
-    knots.filter(k => equals(firstpart,k)).forEach(k => parentSet.add(k._id))
 
+    if(query.length == 1){
+        return knots.filter(k => equals(firstpart,k))
+    }
+    knots.filter(k => equals(firstpart,k)).forEach(k => parentSet.add(k._id))
     var childknots:Knot[]
+    
     for(var i = 1; i < query.length;i++){
-        childknots = knots.filter(k => equals(k,query[i]) && parentSet.has(k.parent))
+        childknots = knots.filter(k => equals(query[i],k) && parentSet.has(k.parent))
         parentSet = new Set<string>()
         childknots.forEach(k => parentSet.add(k._id))
     }

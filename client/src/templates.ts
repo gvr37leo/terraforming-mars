@@ -64,8 +64,8 @@ function updatePlayerData(player){
 
 
 
-function updateResourceData(resource){
-    var html = resource.element
+function updateResourceData(resource:Resource,resourceRef:ResourceElement){
+    var html = resourceRef
     html.label.innerText = resource.name.toString()
     html.instock.innerText = resource.instock.toString()
     html.moneyvalue.innerText = resource.moneyvalue.toString()

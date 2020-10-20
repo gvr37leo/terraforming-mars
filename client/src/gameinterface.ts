@@ -11,11 +11,15 @@ class GameInterface{
     plantsref: ResourceElement
     energyref: ResourceElement
     heatref: ResourceElement
+    modal: Modal
 
 
 
     constructor(){
-
+        this.modal = new Modal()
+        document.body.appendChild(this.modal.rootelement)
+        var asd = string2html(`<div>hello</div>`)
+        this.modal.set(asd)
     }
 
     initHTML(gamedata:any[]){
@@ -48,6 +52,11 @@ class GameInterface{
                 this.loadDashboard(player)
             })
         }
+
+        this.gameboardElement.cards.addEventListener('click', () => {
+            this.modal.show()
+            //load modal with cards of player
+        })
 
         for(let card of cards){
             let cardref = getcardrefs()
@@ -96,9 +105,17 @@ class GameInterface{
         let plants = this.gamedata.find(k => k.parent == player._id && k.name == 'plants')
         let energy = this.gamedata.find(k => k.parent == player._id && k.name == 'energy')
         let heat = this.gamedata.find(k => k.parent == player._id && k.name == 'heat')
-
-        this.gameboardElement
         
+        let company = this.gamedata.find(k => k.parent == player._id && k.objdef == 'company')
+
+        updateResourceData(money,this.moneyref)
+        updateResourceData(metal,this.metalref)
+        updateResourceData(titanium,this.titaniumref)
+        updateResourceData(plants,this.plantsref)
+        updateResourceData(energy,this.energyref)
+        updateResourceData(heat,this.heatref)
+        
+        this.gameboardElement.company.innerText = company.name
         
         
         

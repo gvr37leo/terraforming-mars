@@ -13,3 +13,10 @@ function getGameData(){
     })
     .then(res => res.json())
 }
+
+function reset(){
+    return fetch('/api/reset',{
+        method:'POST',
+    })
+    .then(res => res.json())
+}

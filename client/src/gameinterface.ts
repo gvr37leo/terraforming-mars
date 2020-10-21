@@ -1,6 +1,6 @@
 class GameInterface{
 
-    gamedata:any[]
+    gamedata:Knot[]
     rootelement:HTMLElement
     gameboardElement: GameBoardElement
     playerElements:PlayerElement[] = []
@@ -12,10 +12,12 @@ class GameInterface{
     energyref: ResourceElement
     heatref: ResourceElement
     modal: Modal
+    playerselfid: number
 
 
 
     constructor(){
+        this.playerselfid = 0
         this.modal = new Modal()
         document.body.appendChild(this.modal.rootelement)
         var asd = string2html(`<div>hello</div>`)
@@ -88,11 +90,28 @@ class GameInterface{
             let player = players.find(k => k._id == playerlement.data._id)
             playerlement.playername = player.name
         }
+    }
 
-        
-        
-        
+    collectPlayerData(playerid){
 
+        var player = this.gamedata.find(k => k._id == playerid)
+        var handfolder = this.gamedata.find(k => k.parent == playerid && k.name == 'handfolder')
+        var mulliganfolder = this.gamedata.find(k => k._id == playerid && k.name == 'mulliganfolder')
+        var playedfolder = this.gamedata.find(k => k._id == playerid && k.name == 'playedfolder')
+
+        var mulligancards = this.gamedata.filter(k => k.parent == handfolder._id)
+        var handcards = this.gamedata.filter(k => k.parent == mulliganfolder._id)
+        var playedcards = this.gamedata.filter(k => k.parent == playedfolder._id)
+
+        return {
+            player,
+            mulliganfolder,
+            handfolder,
+            playedfolder,
+            mulligancards,
+            handcards,
+            playedcards,
+        }
     }
 
     loadDashboard(player:Player){
@@ -108,12 +127,12 @@ class GameInterface{
         
         let company = this.gamedata.find(k => k.parent == player._id && k.objdef == 'company')
 
-        updateResourceData(money,this.moneyref)
-        updateResourceData(metal,this.metalref)
-        updateResourceData(titanium,this.titaniumref)
-        updateResourceData(plants,this.plantsref)
-        updateResourceData(energy,this.energyref)
-        updateResourceData(heat,this.heatref)
+        updateResourceData(money as any,this.moneyref)
+        updateResourceData(metal as any,this.metalref)
+        updateResourceData(titanium as any,this.titaniumref)
+        updateResourceData(plants as any,this.plantsref)
+        updateResourceData(energy as any,this.energyref)
+        updateResourceData(heat as any,this.heatref)
         
         this.gameboardElement.company.innerText = company.name
         
@@ -132,3 +151,12 @@ class GameInterface{
     }
 
 }
+
+
+
+
+
+
+
+
+

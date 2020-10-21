@@ -119,8 +119,14 @@ export class GameManager{
             }
         })
     
+        //meant for the researchphase mulligan(dont know how to do generic card selection)
         this.eventqueue.listen('mulliganConfirmed',(e) => {
-    
+            var player = searchData(`player,{"_id":${e.player}}`,this.gamedata)[0] as Player
+            player.isMulliganning = false
+
+            //todo move cards in mulliganfolder to hand or discardpile
+            //make player pay for cards
+            //check if everyone is done if so move to next phase
         })
     
         this.eventqueue.listen('pass',(e) => {
@@ -228,6 +234,7 @@ export class GameManager{
         let playermulliganfolder = searchData(`player,{"_id":${playerid}}/mulliganfolder`,this.gamedata)[0]
         // let cards = searchData(`game/deckfolder/card`,this.gamedata) as Card[]
         var cards = cardidoptions.map(cardid => this.gamedata.find(k => k._id == cardid)) as Card[]
+        player.isMulliganning = true
         player.mulliganMin = min
         player.mulliganMax = max
         cards.forEach(c => {

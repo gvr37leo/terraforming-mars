@@ -16,6 +16,7 @@
 /// <reference path="./src/models/milestone.ts" />
 /// <reference path="./src/models/player.ts" />
 /// <reference path="./src/models/resource.ts" />
+/// <reference path="./src/KnotQueryDB.ts" />
 
 
 

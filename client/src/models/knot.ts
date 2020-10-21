@@ -1,8 +1,8 @@
 class Knot{
-    _id
-    name
-    parent
+    _id:string
+    name:string
+    parent:string
     createdAt
     updatedAt
-    objdef
+    objdef:string
 }

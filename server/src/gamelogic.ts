@@ -5,6 +5,7 @@ import { Knot } from './models/knot'
 import { Meter } from './models/meter'
 import { Player } from './models/player'
 import { Resource } from './models/resource'
+import {KnotQueryDB} from './knotQueryDB'
 
 class EventQueue{
     listeners:{ eventtype: string; cb: (data: any) => void; }[]
@@ -81,8 +82,8 @@ export class GameManager{
         //delete all nodes beneath game(only nescessary if nodes are deleted)(could also just keep track of deletedknodes and only delele those)
         //upsert it back to database
 
-        var events = searchData('/game,{"_id":9}/eventsfolder/event',this.gamedata)
-        this.eventqueue.events.push(...events)
+        // var events = searchData('/game,{"_id":9}/eventsfolder/event',this.gamedata)
+        // this.eventqueue.events.push(...events)
     
     
         this.eventqueue.listen('gamestart',(e) => {
@@ -90,13 +91,14 @@ export class GameManager{
         })
     
         this.eventqueue.listen('phasechange',(data) => {
+            var db = new KnotQueryDB(this.gamedata)
             var phase = data.phase
-            var players = searchData('playerfolder/player',this.gamedata)
+            var players = db.searchObjects([{objdef:'player'}]) as Player[]
             if(phase == 'turnorder'){
                 this.gameknot.firsplayerMarker = (this.gameknot.firsplayerMarker + 1) % players.length
                 this.setPhase('research')
             }else if(phase == 'research'){
-                var deck = searchData('game/deckfolder/card',this.gamedata).map(k => k._id)
+                var deck = db.searchObjdefs(['game','deckfolder','card']).map(k => k._id)
                 for(let player of players){
                     this.pickCards(deck.splice(0,4),0,4,player._id)
                 }
@@ -107,12 +109,13 @@ export class GameManager{
             }else if(phase == 'production'){
                 for(let player of players){
                     player.passed = false
-                    produceresource(player.metal)
-                    produceresource(player.money)
-                    produceresource(player.titanium)
-                    produceresource(player.forest)
-                    produceresource(player.electricity)
-                    produceresource(player.heat)
+                    
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'metal'}]))[0] as any)
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'money'}]))[0] as any)
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'titanium'}]))[0] as any)
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'forest'}]))[0] as any)
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'electricity'}]))[0] as any)
+                    produceresource(db.searchFrom(player as any,db.objects2Query([{name:'heat'}]))[0] as any)
                 }
                 //could do some animations but for now just go to next phase immediatly
                 this.setPhase('turnorder')
@@ -121,7 +124,8 @@ export class GameManager{
     
         //meant for the researchphase mulligan(dont know how to do generic card selection)
         this.eventqueue.listen('mulliganConfirmed',(e) => {
-            var player = searchData(`player,{"_id":${e.player}}`,this.gamedata)[0] as Player
+            var db = new KnotQueryDB(this.gamedata)
+            var player = db.searchObjects([{objdef:'player',"_id":e.player}])[0] as Player
             player.isMulliganning = false
 
             //todo move cards in mulliganfolder to hand or discardpile
@@ -130,7 +134,8 @@ export class GameManager{
         })
     
         this.eventqueue.listen('pass',(e) => {
-            var players = searchData('playerFolder/player',this.gamedata)
+            var db = new KnotQueryDB(this.gamedata)
+            var players = db.searchObjdefs(['playerFolder','player'])
             let player = this.getActivePlayer()
             player.passed = true
 
@@ -266,59 +271,4 @@ export class GameManager{
 
 function produceresource(resource:Resource){
     resource.instock += resource.production
-}
-
-//searchData('/player,{id:9}/hand/card')
-
-function createQuery(query:string):any[]{
-    var parts = query.split('/')
-
-    var res = parts.map(part => {
-        var splittedparts = part.split(',')
-        
-        if(splittedparts.length == 1){
-            return {
-                objdef:splittedparts[0]
-            }
-        }
-        if(splittedparts.length == 2){
-            var jsondata = JSON.parse(splittedparts[1])
-            jsondata.objdef = splittedparts[0]
-            return jsondata
-        }
-    })
-    return res
-}
-
-function searchData(querystring:string,knots:Knot[]):any[]{
-    var query = createQuery(querystring)
-    var parentSet = new Set<string>()
-    var firstpart = query[0]
-
-    if(query.length == 1){
-        return knots.filter(k => equals(firstpart,k))
-    }
-    knots.filter(k => equals(firstpart,k)).forEach(k => parentSet.add(k._id))
-    var childknots:Knot[]
-    
-    for(var i = 1; i < query.length;i++){
-        childknots = knots.filter(k => equals(query[i],k) && parentSet.has(k.parent))
-        parentSet = new Set<string>()
-        childknots.forEach(k => parentSet.add(k._id))
-    }
-
-    return childknots
-}
-
-function equals(query,object){
-    for(var prop in query){
-        if(query[prop] != object[prop]){
-            return false
-        }
-    }
-    return true
-}
-
-function last(arr){
-    return arr[arr.length - 1]
 }

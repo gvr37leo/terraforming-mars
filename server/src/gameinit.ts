@@ -26,10 +26,9 @@ export function initGame(){
     //var guests = goUpAndDown([lobbydef.id,playersfolder.id])
     var playerfolderid = insertObject('playerfolder',gameid,{})
     var guests = []
-    for(var i = 0; i < 4; i++){
-        initPlayer(playerfolderid)
-        //todo:insert guest data into player
-    }
+    initPlayer(playerfolderid)
+
+    
 
     var deckfolderid = insertObject('deckfolder',gameid,{})
     for(var i = 0; i < 50;i++){

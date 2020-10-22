@@ -1,4 +1,5 @@
-// {} > {} / {} ^ {} | {}
+import { Knot } from "./models/knot";
+
 enum QueryType{child,descendant,parent,ancestor}
 
 class QueryPart{
@@ -6,7 +7,7 @@ class QueryPart{
     data:any
 }
 
-class KnotQueryDB{
+export class KnotQueryDB{
 
     idIndex = new Map<string,Knot>()
     parentFk = new Map<string,string[]>();
@@ -48,6 +49,10 @@ class KnotQueryDB{
 
     searchObjects(objects:any[]){
         return this.search(this.objects2Query(objects))
+    }
+
+    searchObjdefs(strings:string[]){
+        return this.searchObjects(strings.map(s => {return {objdef:s}}))
     }
 
     
@@ -146,3 +151,11 @@ class KnotQueryDB{
     }
 }
 
+function equals(query,object){
+    for(var prop in query){
+        if(query[prop] != object[prop]){
+            return false
+        }
+    }
+    return true
+}

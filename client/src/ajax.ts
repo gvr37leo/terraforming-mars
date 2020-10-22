@@ -1,7 +1,10 @@
-function sendEvent(event:any){
-    return fetch('/api/asd',{
+function sendEvent(event:{type,data}){
+    return fetch('/api/pushevent',{
         method:'POST',
-        body:JSON.stringify(event)
+        body:JSON.stringify(event),
+        headers:{
+            'Content-Type': 'application/json'
+        }
     })
     .then(res => res.json())
 }

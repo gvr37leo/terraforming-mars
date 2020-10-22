@@ -166,16 +166,16 @@ function getcardrefs():CardElement{
     }
 }
 
-function updateCardData(card){
-    var html = card.cardElement
-    html.cardid.innerText = card.id.toString()
+function updateCardData(cardref:CardElement,card:Card){
+    var html = cardref
+    html.cardid.innerText = card._id.toString()
     html.effect.innerHTML = ''
-    html.effect.appendChild(card.renderDescription(card))
+    // html.effect.appendChild(card.renderDescription(card))
     html.flavortext.innerText = card.flavortext
     html.image.src = card.imageurl
     html.title.innerText = card.title
     html.cost.innerText = card.cost.toString()
-    html.rules.innerText = card.rules.length.toString()
+    // html.rules.innerText = card.rules.length.toString()
     // html.tags.innerText = card.tags.map(t => Tags[t]) .join(',')
 
 }

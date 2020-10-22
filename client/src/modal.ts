@@ -25,6 +25,7 @@ class Modal{
     }
 
     set(element:HTMLElement){
+        this.containerelement.innerHTML = ''
         this.containerelement.appendChild(element)
     }
 

@@ -1,9 +1,12 @@
 import {initGame} from './src/gameinit'
 import {GameManager} from './src/gamelogic'
 import express from 'express'
+// import bp from 'body-parser'
 
 var port = 8000
 var app = express()
+app.use(express.json())
+// app.use(bp.urlencoded({ extended: true }))
 app.use(express.static('../client'))
 
 var gamedata:any[] = []
@@ -19,15 +22,7 @@ app.get('/api/getgame', (req,res) => {
 })
 
 app.post('/api/pushevent',(req,res) => {
-    var eventfolder = gamemanager.gamedata.find(k => k.name == 'eventqueue')
-    var event = req.body
-    gamemanager.gamedata.push({
-        parent:eventfolder._id,
-        type:event.type,
-        data:event.data
-    } as any)
-    gamemanager.listenForGameEvents()
-    
+    gamemanager.eventqueue.addAndTrigger(req.body.type,req.body.data)
     res.send(gamemanager.gamedata)
 })
 

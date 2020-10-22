@@ -56,6 +56,12 @@ class GameInterface{
         }
 
         this.gameboardElement.cards.addEventListener('click', () => {
+            var kdb = new KnotQueryDB(this.gamedata)
+            var player1 = kdb.searchObjects([{objdef:'player'}])[0]
+
+            var playerdata = this.collectPlayerData(player1._id)
+            var container = this.renderCardsList(playerdata.mulligancards as any)
+            this.modal.set(container)
             this.modal.show()
             //load modal with cards of player
         })
@@ -93,15 +99,16 @@ class GameInterface{
     }
 
     collectPlayerData(playerid){
+        var db = new KnotQueryDB(this.gamedata)
+        var player =  db.searchObjects([{_id:playerid}])[0]
+            
+        var handfolder = db.searchFrom(player,db.objects2Query([{objdef:'handfolder'}]))[0]
+        var mulliganfolder = db.searchFrom(player,db.objects2Query([{objdef:'mulliganfolder'}]))[0]
+        var playedfolder = db.searchFrom(player,db.objects2Query([{objdef:'playedfolder'}]))[0]
 
-        var player = this.gamedata.find(k => k._id == playerid)
-        var handfolder = this.gamedata.find(k => k.parent == playerid && k.name == 'handfolder')
-        var mulliganfolder = this.gamedata.find(k => k._id == playerid && k.name == 'mulliganfolder')
-        var playedfolder = this.gamedata.find(k => k._id == playerid && k.name == 'playedfolder')
-
-        var mulligancards = this.gamedata.filter(k => k.parent == handfolder._id)
-        var handcards = this.gamedata.filter(k => k.parent == mulliganfolder._id)
-        var playedcards = this.gamedata.filter(k => k.parent == playedfolder._id)
+        var mulligancards = db.getChildren(mulliganfolder)
+        var handcards = db.getChildren(handfolder)
+        var playedcards = db.getChildren(playedfolder)
 
         return {
             player,
@@ -150,6 +157,41 @@ class GameInterface{
         //effects
     }
 
+
+
+    renderCardsList(cards:Card[]){
+        var container = string2html(`
+            <div>
+                <div id="cardcontainer" style="display:flex;">
+                
+                </div>
+                <div>
+                    <button id="confirmbtn">confirm mulligan</button>
+                </div>
+            </div>
+        `)
+        var cardcontainer = container.querySelector('#cardcontainer')
+        var confirmbtn = container.querySelector('#confirmbtn')
+        confirmbtn.addEventListener('click', () => {
+            sendEvent({
+                type:'mulliganConfirmed',
+                data:{
+                    chosencards:cards.filter(c => c.mulliganselected).map(c => c._id)
+                }
+            })
+        })
+        for(let card of cards){
+            let refs = getcardrefs()
+            refs.root.addEventListener('click',() => {
+                card.mulliganselected = !card.mulliganselected
+                card.mulliganselected ? refs.root.classList.add('selected') : refs.root.classList.remove('selected')
+                
+            })
+            updateCardData(refs,card as any)
+            cardcontainer.appendChild(refs.root)
+        }
+        return container
+    }
 }
 
 
